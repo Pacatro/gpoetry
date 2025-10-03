@@ -1,6 +1,6 @@
-# Tiny Poet
+# GPoeTry
 
-A tiny project to experiment with Spanish poetry.
+A tiny GPT model that talks like a spanish poet.
 
 ## Getting Started
 
@@ -12,8 +12,8 @@ Follow these steps to run the project:
 1. **Clone the repository**
 
     ```bash
-    git clone https://github.com/Pacatro/tiny_poet.git
-    cd tiny_poet
+    git clone https://github.com/Pacatro/gpoetry.git
+    cd gpoetry
     ```
 
 2. **Install dependencies and create a virtual environment**
@@ -27,7 +27,7 @@ Follow these steps to run the project:
     To see all available commands and options, run:
 
     ```bash
-    uv run tiny_poet
+    uv run gpoetry
     ```
 
 ## Dataset
