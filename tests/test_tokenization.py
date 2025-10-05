@@ -1,8 +1,8 @@
-from gpoetry.tokenization import TokenizationMode, Tokenizer
+from gpoetry.tokenization import Tokenization, Tokenizer
 
 
 def test_word_tokenization():
-    tokenizer = Tokenizer(TokenizationMode.WORD)
+    tokenizer = Tokenizer(Tokenization.WORD)
     text = "This is a test"
     encoded_string = tokenizer.encode(text)
     decoded_string = tokenizer.decode(encoded_string)
@@ -13,7 +13,7 @@ def test_word_tokenization():
 
 
 def test_char_tokenization():
-    tokenizer = Tokenizer(TokenizationMode.CHAR)
+    tokenizer = Tokenizer(Tokenization.CHAR)
     text = "This is a test"
     encoded_string = tokenizer.encode(text)
     decoded_string = tokenizer.decode(encoded_string)

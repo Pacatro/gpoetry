@@ -1,14 +1,14 @@
 from enum import Enum
 
 
-class TokenizationMode(Enum):
+class Tokenization(Enum):
     WORD = "word"
     CHAR = "char"
     BPE = "bpe"
 
 
 class Tokenizer:
-    def __init__(self, mode: TokenizationMode):
+    def __init__(self, mode: Tokenization):
         self._mode = mode
         self._stoi = None
         self._itos = None
@@ -20,13 +20,13 @@ class Tokenizer:
             return []
 
         match self._mode:
-            case TokenizationMode.WORD:
+            case Tokenization.WORD:
                 tokens = text.split()
                 self.vocab = sorted(set(tokens))
-            case TokenizationMode.CHAR:
+            case Tokenization.CHAR:
                 tokens = list(text)
                 self.vocab = sorted(set(tokens))
-            case TokenizationMode.BPE:
+            case Tokenization.BPE:
                 raise NotImplementedError("BPE tokenization is not implemented yet")
 
         self.vocab_size = len(self.vocab)
@@ -44,9 +44,9 @@ class Tokenizer:
         decoded_tokens = [self._itos[idx] for idx in tokens]
 
         match self._mode:
-            case TokenizationMode.WORD:
+            case Tokenization.WORD:
                 return " ".join(decoded_tokens)
-            case TokenizationMode.CHAR:
+            case Tokenization.CHAR:
                 return "".join(decoded_tokens)
-            case TokenizationMode.BPE:
+            case Tokenization.BPE:
                 raise NotImplementedError("BPE tokenization is not implemented yet")
