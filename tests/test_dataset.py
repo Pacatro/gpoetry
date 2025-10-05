@@ -1,5 +1,5 @@
-from tiny_poet.main import SpanishPoetryDataset
-from tiny_poet import config
+from gpoetry.main import SpanishPoetryDataset
+from gpoetry import config
 
 
 def test_dataset_loads():
@@ -13,4 +13,3 @@ def test_dataset_getitem():
     item = ds[0]
     assert isinstance(item, str)
     assert len(item) > 0
-

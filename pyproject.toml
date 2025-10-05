@@ -1,5 +1,5 @@
 [project]
-name = "tiny_poet"
+name = "gpoetry"
 version = "0.1.0"
 description = "A new GPT model that talks like a poet"
 readme = "README.md"
@@ -19,4 +19,4 @@ testpaths = ["tests"]
 addopts = "-v"
 
 [project.scripts]
-tiny_poet = "tiny_poet.main:main"
+gpoetry = "gpoetry.main:main"
