@@ -8,8 +8,11 @@ List of things to do in the future.
 
 ## Tokenization
 
-- [ ] Implement algorithms for tokenization (World-level, Char-level, BPE)
-- [ ] Implement Tokenizer class
+- [x] Implement Tokenizer class
+- [ ] Implement algorithms for tokenization
+  - [x] Word-level
+  - [x] Char-level
+  - [ ] [BPE](https://en.wikipedia.org/wiki/Byte-pair_encoding)
 
 ## Embeddings
 
