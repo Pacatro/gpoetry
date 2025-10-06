@@ -14,11 +14,19 @@ List of things to do in the future.
   - [x] Char-level
   - [ ] [BPE](https://en.wikipedia.org/wiki/Byte-pair_encoding)
 
-## Embeddings
+## Model
 
-- [ ] Implement torch moduel for embeddings
+- [x] Embeddings
+- [x] Head
+- [x] Self-attention
+- [x] Transformer layer
 
-## Transformer model
+## Training
 
-- [ ] Multihead self-attention
-- [ ] Transformer layer
+- [ ] Implement training loop
+- [ ] Maybe use lightning?
+
+## Inference
+
+- [ ] Test model inference
+- [ ] Create a CLI chat
