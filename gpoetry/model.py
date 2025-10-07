@@ -33,7 +33,15 @@ class GPoeTry(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         token_emb = self.token_emb(x)
-        pos_emb = self.pos_emb(torch.arange(x.shape[1]))
+
+        seq_len = x.shape[1]
+
+        if seq_len > self.pos_emb.num_embeddings:
+            raise ValueError(
+                f"The sequence length is {seq_len}, but the positional embedding has {self.pos_emb.num_embeddings} embeddings"
+            )
+
+        pos_emb = self.pos_emb(torch.arange(seq_len, device=x.device))
 
         x = token_emb + pos_emb
         x = self.blocks(x)
