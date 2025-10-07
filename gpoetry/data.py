@@ -18,7 +18,11 @@ class SpanishPoetryDataset(TorchDataset):
         if max_samples and max_samples > 0:
             ds = ds.select(range(max_samples))
 
-        self.dataset = [tokenizer.encode(text) for text in ds["content"]]
+        texts = ds["content"]
+
+        tokenizer.fit(texts)
+
+        self.dataset = [tokenizer.encode(text) for text in texts]
 
     def __len__(self):
         return len(self.dataset)
