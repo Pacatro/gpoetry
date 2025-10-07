@@ -9,14 +9,13 @@ from .data import SpanishPoetryDataset
 def train_step(
     model: nn.Module,
     train_dataloader: DataLoader,
-    epoch: int,
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: str,
     scaler: torch.amp.grad_scaler.GradScaler | None = None,
 ) -> float:
     train_loss = 0
-    for batch_idx, batch in enumerate(train_dataloader):
+    for batch in train_dataloader:
         batch = batch.to(device)
 
         # We use all tokens except the last one (x) for training the model
@@ -59,7 +58,6 @@ def test_step(
     model: nn.Module,
     test_dataloader: DataLoader,
     loss_fn: nn.Module,
-    pad_token_id: float,
     device: str,
 ) -> float:
     test_loss = 0
@@ -76,10 +74,6 @@ def test_step(
             batch_size_current, seq_len, vocab_size = logits.shape
             logits = logits.reshape(batch_size_current * seq_len, vocab_size)
             y = y.reshape(batch_size_current * seq_len)
-
-            mask = y != pad_token_id
-            logits = logits[mask]
-            y = y[mask]
 
             loss = loss_fn(logits, y)
 
@@ -157,7 +151,6 @@ def train(
             model=model,
             test_dataloader=test_loader,
             loss_fn=loss_fn,
-            pad_token_id=pad_token_id,
             device=device,
         )
 
