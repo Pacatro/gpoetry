@@ -141,7 +141,6 @@ def train(
         train_loss = train_step(
             model=model,
             train_dataloader=train_loader,
-            epoch=epoch,
             loss_fn=loss_fn,
             optimizer=optimizer,
             device=device,
