@@ -1,17 +1,12 @@
-import torch
-
 from . import config
 from .data import SpanishPoetryDataset
 from .tokenization import Tokenization, Tokenizer
 from .model import GPoeTry
 from .train import train
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-# device = "cpu"
-
 
 def main():
-    print(f"Using device: {device}")
+    print(f"Using device: {config.DEVICE}")
     tokenizer = Tokenizer(Tokenization.WORD)
     ds = SpanishPoetryDataset(config.DATASET_URL, tokenizer, max_samples=10)
 
@@ -30,7 +25,7 @@ def main():
         epochs=config.EPOCHS,
         batch_size=config.BATCH_SIZE,
         lr=config.LR,
-        device=device,
+        device=config.DEVICE,
     )
 
 

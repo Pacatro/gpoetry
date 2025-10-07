@@ -1,3 +1,8 @@
+import torch
+
+DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
+
+# Dataset
 DATASET_URL: str = "andreamorgar/spanish_poetry"
 
 # Model config
