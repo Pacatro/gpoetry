@@ -44,8 +44,8 @@ class Tokenizer(ABC):
         assert len(tokens) > 0, "Cannot decode empty tokens"
         assert self._is_fitted, RuntimeError("Tokenizer is not fitted")
 
-        tokens = [self._itos[idx] for idx in tokens]
-        return self._detokenize(tokens)
+        decoded_tokens = [self._itos[t] for t in tokens]
+        return self._detokenize(decoded_tokens)
 
 
 class WordTokenizer(Tokenizer):
