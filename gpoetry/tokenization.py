@@ -1,20 +1,20 @@
-from enum import Enum
+from abc import ABC, abstractmethod
 
 
-class Tokenization(Enum):
-    WORD = "word"
-    CHAR = "char"
-    BPE = "bpe"
+class Tokenizer(ABC):
+    def __init__(self):
+        self._is_fitted: bool = False
+        self._stoi: dict[str, int] = {}
+        self._itos: dict[int, str] = {}
+        self.vocab: list[str] = []
 
+    @abstractmethod
+    def _tokenize(self, text: str) -> list[str]:
+        raise NotImplementedError("Tokenize method is not implemented")
 
-class Tokenizer:
-    def __init__(self, mode: Tokenization):
-        self._mode = mode
-        self._stoi = None
-        self._itos = None
-        self._is_fitted = False
-        self.vocab = None
-        self.vocab_size = 0
+    @abstractmethod
+    def _detokenize(self, tokens: list[str]) -> str:
+        raise NotImplementedError("Detokenize method is not implemented")
 
     def fit(self, texts: list[str]) -> None:
         if self._is_fitted:
@@ -25,59 +25,40 @@ class Tokenizer:
         for text in texts:
             if not text:
                 continue
-
-            match self._mode:
-                case Tokenization.WORD:
-                    tokens = text.split()
-                case Tokenization.CHAR:
-                    tokens = list(text)
-                case Tokenization.BPE:
-                    raise NotImplementedError("BPE tokenization is not implemented yet")
-
+            tokens = self._tokenize(text)
             all_tokens.update(tokens)
 
         self.vocab = sorted(all_tokens)
         self.vocab_size = len(self.vocab)
-
         self._stoi = {token: idx for idx, token in enumerate(self.vocab)}
         self._itos = {idx: token for idx, token in enumerate(self.vocab)}
-
         self._is_fitted = True
 
     def encode(self, text: str) -> list[int]:
         if not self._is_fitted:
             raise RuntimeError("Tokenizer is not fitted")
-
-        if not text:
-            return []
-
-        match self._mode:
-            case Tokenization.WORD:
-                tokens = text.split()
-            case Tokenization.CHAR:
-                tokens = list(text)
-            case Tokenization.BPE:
-                raise NotImplementedError("BPE tokenization is not implemented yet")
-
-        assert self._stoi is not None and self._itos is not None
-
-        return [self._stoi[token] for token in tokens]
+        tokens = self._tokenize(text)
+        return [self._stoi[t] for t in tokens]
 
     def decode(self, tokens: list[int]) -> str:
-        if not tokens:
-            return ""
+        assert len(tokens) > 0, "Cannot decode empty tokens"
+        assert self._is_fitted, RuntimeError("Tokenizer is not fitted")
 
-        if not self._is_fitted:
-            raise RuntimeError("Tokenizer is not fitted")
+        tokens = [self._itos[idx] for idx in tokens]
+        return self._detokenize(tokens)
 
-        assert self._itos is not None, "You must encode text before decoding"
 
-        decoded_tokens = [self._itos[idx] for idx in tokens]
+class WordTokenizer(Tokenizer):
+    def _tokenize(self, text: str) -> list[str]:
+        return text.split()
 
-        match self._mode:
-            case Tokenization.WORD:
-                return " ".join(decoded_tokens)
-            case Tokenization.CHAR:
-                return "".join(decoded_tokens)
-            case Tokenization.BPE:
-                raise NotImplementedError("BPE tokenization is not implemented yet")
+    def _detokenize(self, tokens: list[str]) -> str:
+        return " ".join(tokens)
+
+
+class CharTokenizer(Tokenizer):
+    def _tokenize(self, text: str) -> list[str]:
+        return list(text)
+
+    def _detokenize(self, tokens: list[str]) -> str:
+        return "".join(tokens)

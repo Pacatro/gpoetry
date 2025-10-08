@@ -1,11 +1,11 @@
 import pytest
 
-from gpoetry.tokenization import Tokenization, Tokenizer
+from gpoetry.tokenization import WordTokenizer, CharTokenizer
 
 
 def test_word_tokenization():
     text = "This is a test"
-    tokenizer = Tokenizer(Tokenization.WORD)
+    tokenizer = WordTokenizer()
     tokenizer.fit([text])
     encoded_string = tokenizer.encode(text)
     decoded_string = tokenizer.decode(encoded_string)
@@ -16,7 +16,7 @@ def test_word_tokenization():
 
 
 def test_char_tokenization():
-    tokenizer = Tokenizer(Tokenization.CHAR)
+    tokenizer = CharTokenizer()
     text = "This is a test"
     tokenizer.fit([text])
     encoded_string = tokenizer.encode(text)
@@ -28,7 +28,7 @@ def test_char_tokenization():
 
 
 def test_tokenizer_not_fitted():
-    tokenizer = Tokenizer(Tokenization.WORD)
+    tokenizer = WordTokenizer()
     text = "This is a test"
 
     with pytest.raises(RuntimeError) as excinfo:

@@ -1,13 +1,13 @@
 from . import config
 from .data import SpanishPoetryDataset
-from .tokenization import Tokenization, Tokenizer
+from .tokenization import WordTokenizer
 from .model import GPoeTry
 from .train import train
 
 
 def main():
     print(f"Using device: {config.DEVICE}")
-    tokenizer = Tokenizer(Tokenization.WORD)
+    tokenizer = WordTokenizer()
     ds = SpanishPoetryDataset(config.DATASET_URL, tokenizer, max_samples=10)
 
     model = GPoeTry(
