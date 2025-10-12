@@ -5,23 +5,33 @@ import torch
 from .tokenization import Tokenizer
 
 
+def load_poems(url: str, max_samples: int | None = None) -> list[str]:
+    ds = load_dataset(url, split="train")
+    assert isinstance(ds, HFDataset)
+
+    if max_samples and max_samples > 0:
+        ds = ds.select(range(max_samples))
+
+    return [text for text in ds["content"] if text]
+
+
+def load_from_file(path: str) -> list[str]:
+    with open(path, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    parts = content.split("<|inicio|>")
+
+    poems = []
+    for part in parts[1:]:
+        if "<|fin|>" in part:
+            poem = part.split("<|fin|>")[0].strip()
+            poems.append(poem)
+
+    return poems
+
+
 class SpanishPoetryDataset(TorchDataset):
-    def __init__(
-        self,
-        hf_url: str,
-        tokenizer: Tokenizer,
-        max_samples: int | None = None,
-    ):
-        ds = load_dataset(hf_url, split="train")
-        assert isinstance(ds, HFDataset)
-
-        if max_samples and max_samples > 0:
-            ds = ds.select(range(max_samples))
-
-        texts = [text for text in ds["content"] if text]
-
-        tokenizer.fit(texts)
-
+    def __init__(self, texts: list[str], tokenizer: Tokenizer):
         self.dataset = [tokenizer.encode(text) for text in texts]
 
     def __len__(self):

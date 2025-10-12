@@ -27,8 +27,18 @@ def test_char_tokenization():
     assert decoded_string == text
 
 
-def test_tokenizer_not_fitted():
+def test_word_tokenizer_not_fitted():
     tokenizer = WordTokenizer()
+    text = "This is a test"
+
+    with pytest.raises(RuntimeError) as excinfo:
+        _ = tokenizer.encode(text)
+
+    assert "Tokenizer is not fitted" in str(excinfo.value)
+
+
+def test_char_tokenizer_not_fitted():
+    tokenizer = CharTokenizer()
     text = "This is a test"
 
     with pytest.raises(RuntimeError) as excinfo:

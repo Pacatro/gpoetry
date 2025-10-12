@@ -1,4 +1,10 @@
 from abc import ABC, abstractmethod
+from enum import Enum
+
+
+class TokenizerType(Enum):
+    WORD = "word"
+    CHAR = "char"
 
 
 class Tokenizer(ABC):
@@ -35,8 +41,8 @@ class Tokenizer(ABC):
         self._is_fitted = True
 
     def encode(self, text: str) -> list[int]:
-        if not self._is_fitted:
-            raise RuntimeError("Tokenizer is not fitted")
+        assert self._is_fitted, RuntimeError("Tokenizer is not fitted")
+
         tokens = self._tokenize(text)
         return [self._stoi[t] for t in tokens]
 

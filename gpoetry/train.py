@@ -12,7 +12,6 @@ def train_step(
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: str,
-    scaler: torch.amp.grad_scaler.GradScaler | None = None,
 ) -> float:
     train_loss = 0
     for batch in train_dataloader:
@@ -23,30 +22,17 @@ def train_step(
         x = batch[:, :-1]
         y = batch[:, 1:]
 
-        if scaler is not None:
-            with torch.autocast(device):
-                logits = model(x)
+        logits = model(x)
 
-                # The logits have shape (batch_size, sequence_len, vocab_size)
-                # To use the loss function we need to reshape them to (batch_size * sequence_len, vocab_size)
-                b, t, v = logits.shape
-                logits = logits.reshape(b * t, v)
-                y = y.reshape(b * t)
-                loss = loss_fn(logits, y)
-
-            optimizer.zero_grad()
-            scaler.scale(loss).backward()
-            scaler.step(optimizer)
-            scaler.update()
-        else:
-            logits = model(x)
-            b, t, v = logits.shape
-            logits = logits.reshape(b * t, v)
-            y = y.reshape(b * t)
-            loss = loss_fn(logits, y)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
+        # The logits have shape (batch_size (b), sequence_len (t), vocab_size (v))
+        # To use the loss function we need to reshape them to (batch_size * sequence_len, vocab_size)
+        b, t, v = logits.shape
+        logits = logits.reshape(b * t, v)
+        y = y.reshape(b * t)
+        loss = loss_fn(logits, y)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
         train_loss += loss.item()
 
@@ -60,6 +46,7 @@ def test_step(
     loss_fn: nn.Module,
     device: str,
 ) -> float:
+    model.eval()
     test_loss = 0
 
     with torch.inference_mode():
@@ -83,16 +70,6 @@ def test_step(
     return test_loss
 
 
-def collate_fn(
-    batch: list[torch.Tensor], pad_token_id: int, max_len: int | None = None
-) -> torch.Tensor:
-    if max_len is not None:
-        batch = [seq[:max_len] if len(seq) > max_len else seq for seq in batch]
-
-    padded_batch = pad_sequence(batch, batch_first=True, padding_value=pad_token_id)
-    return padded_batch.long()
-
-
 def train(
     model: nn.Module,
     dataset: SpanishPoetryDataset,
@@ -102,7 +79,6 @@ def train(
     lr: float = 1e-3,
     pad_token_id: int = 0,
     device: str = "cpu",
-    use_amp: bool = False,
 ) -> None:
     model.to(device)
 
@@ -115,7 +91,9 @@ def train(
         x_train,
         batch_size=batch_size,
         num_workers=4,
-        collate_fn=lambda x: collate_fn(batch=x, pad_token_id=pad_token_id),
+        collate_fn=lambda x: pad_sequence(
+            x, batch_first=True, padding_value=pad_token_id
+        ),
         pin_memory=True,
         shuffle=True,
     )
@@ -123,17 +101,15 @@ def train(
         x_test,
         batch_size=batch_size,
         num_workers=4,
-        collate_fn=lambda x: collate_fn(batch=x, pad_token_id=pad_token_id),
+        collate_fn=lambda x: pad_sequence(
+            x, batch_first=True, padding_value=pad_token_id
+        ),
         pin_memory=True,
     )
 
     # If we area using padding tokens we need to remove them from the logits
     loss_fn = nn.CrossEntropyLoss(ignore_index=pad_token_id)
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
-
-    scaler = (
-        torch.amp.grad_scaler.GradScaler() if (use_amp and device == "cuda") else None
-    )
 
     for epoch in range(1, epochs + 1):
         model.train()
@@ -144,7 +120,6 @@ def train(
             loss_fn=loss_fn,
             optimizer=optimizer,
             device=device,
-            scaler=scaler,
         )
         test_loss = test_step(
             model=model,
@@ -153,8 +128,9 @@ def train(
             device=device,
         )
 
-        print(
-            f"Epoch: {epoch} | "
-            f"train_loss: {train_loss:.4f} | "
-            f"test_loss: {test_loss:.4f} | "
-        )
+        if epoch == 1 or epoch % 10 == 0:
+            print(
+                f"Epoch: {epoch} | "
+                f"train_loss: {train_loss:.4f} | "
+                f"test_loss: {test_loss:.4f} | "
+            )
