@@ -1,8 +1,14 @@
 from datasets import load_dataset, Dataset as HFDataset
 from torch.utils.data import Dataset as TorchDataset
 import torch
+from enum import Enum
 
 from .tokenization import Tokenizer
+
+
+class DatasetType(Enum):
+    HUGGINGFACE = "huggingface"
+    TXT = "txt"
 
 
 class SpanishPoetryDataset(TorchDataset):

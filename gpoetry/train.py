@@ -12,10 +12,14 @@ def train_step(
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: str,
+    block_size: int | None = None,
 ) -> float:
     train_loss = 0
     for batch in train_dataloader:
-        batch = batch.to(device)
+        if not block_size:
+            batch = batch[:block_size].to(device)
+        else:
+            batch = batch.to(device)
 
         # We use all tokens except the last one (x) for training the model
         # Then we use all tokens (y) to use it in the loss function
@@ -45,13 +49,17 @@ def test_step(
     test_dataloader: DataLoader,
     loss_fn: nn.Module,
     device: str,
+    block_size: int | None = None,
 ) -> float:
     model.eval()
     test_loss = 0
 
     with torch.inference_mode():
         for batch in test_dataloader:
-            inputs = batch.to(device)
+            if not block_size:
+                inputs = batch.to(device)
+            else:
+                inputs = batch[:block_size].to(device)
 
             x = inputs[:, :-1]
             y = inputs[:, 1:]
@@ -79,6 +87,7 @@ def train(
     lr: float = 1e-3,
     pad_token_id: int = 0,
     device: str = "cpu",
+    block_size: int | None = None,
 ) -> None:
     model.to(device)
 
@@ -120,12 +129,14 @@ def train(
             loss_fn=loss_fn,
             optimizer=optimizer,
             device=device,
+            block_size=block_size,
         )
         test_loss = test_step(
             model=model,
             test_dataloader=test_loader,
             loss_fn=loss_fn,
             device=device,
+            block_size=block_size,
         )
 
         if epoch == 1 or epoch % 10 == 0:

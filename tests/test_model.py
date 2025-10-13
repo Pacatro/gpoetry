@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch import nn
 
-from gpoetry.model import FeedForward, Head, MHSelfAttention, TransformerLayer, GPoeTry
+from gpoetry.model import FeedForward, Head, MHSelfAttention, TransformerLayer, GPTModel
 
 
 class TestHead:
@@ -153,13 +153,13 @@ class TestTransformerLayer:
         assert x.grad is not None
 
 
-class TestGPoeTry:
-    """Tests for the main GPoeTry model."""
+class TestGPTModel:
+    """Tests for the main GPTModel model."""
 
     @pytest.fixture
     def model(self):
-        """Create a GPoeTry model instance for testing."""
-        return GPoeTry(
+        """Create a GPTModel model instance for testing."""
+        return GPTModel(
             vocab_size=1000,
             num_heads=4,
             num_layers=2,
@@ -169,7 +169,7 @@ class TestGPoeTry:
         )
 
     def test_initialization(self, model):
-        """Test that GPoeTry initializes correctly."""
+        """Test that GPTModel initializes correctly."""
         assert isinstance(model.token_emb, nn.Embedding)
         assert isinstance(model.pos_emb, nn.Embedding)
         assert isinstance(model.blocks, nn.Sequential)

@@ -3,7 +3,7 @@ from torch import nn
 from torch.nn import functional as F
 
 
-class GPoeTry(nn.Module):
+class GPTModel(nn.Module):
     def __init__(
         self,
         vocab_size: int,

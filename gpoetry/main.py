@@ -1,6 +1,6 @@
 from . import config
-from .data import SpanishPoetryDataset, load_from_hf
-from .model import GPoeTry
+from .data import SpanishPoetryDataset, load_from_hf, load_from_txt, DatasetType
+from .model import GPTModel
 from .tokenization import CharTokenizer, TokenizerType, WordTokenizer
 from .train import train
 
@@ -8,7 +8,6 @@ from .train import train
 def main():
     print(f"Using device: {config.DEVICE}")
     print(f"Using dataset: {config.DATASET_URL}")
-    print(f"Using max samples: {config.MAX_SAMPLES}")
     print(
         f"Using model config: num_heads={config.NUM_HEADS}, num_layers={config.NUM_LAYERS}, block_size={config.BLOCK_SIZE}, emb_dim={config.EMB_DIM}, dropout_p={config.DROPOUT_P}"
     )
@@ -22,12 +21,15 @@ def main():
         case TokenizerType.CHAR:
             tokenizer = CharTokenizer()
 
-    texts = load_from_hf(
-        config.DATASET_URL,
-        column_name=config.DATASET_TEXT_COLUMN,
-        max_samples=config.MAX_SAMPLES,
-    )
-    # texts = load_from_txt("data/datos_sancho_mini.txt")
+    match config.DATASET_TYPE:
+        case DatasetType.HUGGINGFACE:
+            texts = load_from_hf(
+                config.DATASET_URL,
+                column_name=config.DATASET_TEXT_COLUMN,
+                max_samples=config.MAX_SAMPLES,
+            )
+        case DatasetType.TXT:
+            texts = load_from_txt("data/datos_sancho_mini.txt")
 
     tokenizer.fit(texts)
 
@@ -36,7 +38,7 @@ def main():
     print("Dataset length:", len(ds))
     print("vocab_size", tokenizer.vocab_size)
 
-    model = GPoeTry(
+    model = GPTModel(
         vocab_size=tokenizer.vocab_size,
         num_heads=config.NUM_HEADS,
         num_layers=config.NUM_LAYERS,
@@ -55,6 +57,7 @@ def main():
         batch_size=config.BATCH_SIZE,
         lr=config.LR,
         device=config.DEVICE,
+        block_size=config.BLOCK_SIZE,
     )
 
 

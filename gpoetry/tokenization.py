@@ -41,14 +41,17 @@ class Tokenizer(ABC):
         self._is_fitted = True
 
     def encode(self, text: str) -> list[int]:
-        assert self._is_fitted, RuntimeError("Tokenizer is not fitted")
+        if not self._is_fitted:
+            raise RuntimeError("Tokenizer is not fitted")
 
         tokens = self._tokenize(text)
         return [self._stoi[t] for t in tokens]
 
     def decode(self, tokens: list[int]) -> str:
         assert len(tokens) > 0, "Cannot decode empty tokens"
-        assert self._is_fitted, RuntimeError("Tokenizer is not fitted")
+
+        if not self._is_fitted:
+            raise RuntimeError("Tokenizer is not fitted")
 
         decoded_tokens = [self._itos[t] for t in tokens]
         return self._detokenize(decoded_tokens)
