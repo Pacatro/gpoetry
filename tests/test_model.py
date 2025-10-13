@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch import nn
 
-from gpoetry.model import FeedForward, Head, MHSelfAttention, TransformerLayer, GPTModel
+from gpoetry.model import MLP, GPTConfig, Head, MHSelfAttention, Transformer, GPTModel
 
 
 class TestHead:
@@ -73,16 +73,16 @@ class TestMHSelfAttention:
         assert not torch.all(x.grad == 0)
 
 
-class TestFeedForward:
-    """Tests for the FeedForward module."""
+class TestMLP:
+    """Tests for the MLP module."""
 
     @pytest.fixture
     def ffn(self):
-        """Create a FeedForward instance for testing."""
-        return FeedForward(emb_dim=64, p=0.1)
+        """Create a MLP instance for testing."""
+        return MLP(emb_dim=64, p=0.1)
 
     def test_initialization(self, ffn):
-        """Test that FeedForward initializes correctly."""
+        """Test that MLP initializes correctly."""
         assert isinstance(ffn.mlp, nn.Sequential)
         assert len(ffn.mlp) == 4
         assert isinstance(ffn.mlp[0], nn.Linear)
@@ -113,19 +113,19 @@ class TestFeedForward:
         assert x.grad is not None
 
 
-class TestTransformerLayer:
-    """Tests for the TransformerLayer module."""
+class TestTransformer:
+    """Tests for the Transformer module."""
 
     @pytest.fixture
     def layer(self):
-        """Create a TransformerLayer instance for testing."""
-        return TransformerLayer(emb_dim=64, num_heads=4, block_size=128, p=0.1)
+        """Create a Transformer instance for testing."""
+        return Transformer(emb_dim=64, num_heads=4, block_size=128, p=0.1)
 
     def test_initialization(self, layer):
-        """Test that TransformerLayer initializes correctly."""
+        """Test that Transformer initializes correctly."""
         assert isinstance(layer.mhsa, MHSelfAttention)
         assert isinstance(layer.ln1, nn.LayerNorm)
-        assert isinstance(layer.ffn, FeedForward)
+        assert isinstance(layer.ffn, MLP)
         assert isinstance(layer.ln2, nn.LayerNorm)
 
     def test_forward_shape(self, layer):
@@ -159,7 +159,7 @@ class TestGPTModel:
     @pytest.fixture
     def model(self):
         """Create a GPTModel model instance for testing."""
-        return GPTModel(
+        config = GPTConfig(
             vocab_size=1000,
             num_heads=4,
             num_layers=2,
@@ -167,6 +167,7 @@ class TestGPTModel:
             emb_dim=64,
             p=0.1,
         )
+        return GPTModel(config=config)
 
     def test_initialization(self, model):
         """Test that GPTModel initializes correctly."""

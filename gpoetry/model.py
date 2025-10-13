@@ -1,35 +1,38 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from dataclasses import dataclass
+
+
+@dataclass
+class GPTConfig:
+    vocab_size: int
+    num_heads: int
+    num_layers: int
+    block_size: int
+    emb_dim: int
+    p: float
+
+    def __repr__(self) -> str:
+        return f"Vocab size: {self.vocab_size}\nnum_heads: {self.num_heads}\nnum_layers: {self.num_layers}\nblock_size: {self.block_size}\nemb_dim: {self.emb_dim}\np: {self.p}"
 
 
 class GPTModel(nn.Module):
-    def __init__(
-        self,
-        vocab_size: int,
-        num_heads: int,
-        num_layers: int = 4,
-        block_size: int = 256,
-        emb_dim: int = 256,
-        p: float = 0.2,
-    ):
+    def __init__(self, config: GPTConfig):
         super().__init__()
-        self.token_emb = nn.Embedding(vocab_size, emb_dim)
-        self.pos_emb = nn.Embedding(block_size, emb_dim)
+        self.token_emb = nn.Embedding(config.vocab_size, config.emb_dim)
+        self.pos_emb = nn.Embedding(config.block_size, config.emb_dim)
 
-        layers = [
-            TransformerLayer(
-                emb_dim,
-                num_heads,
-                block_size,
-                p=p,
-            )
-            for _ in range(num_layers)
-        ]
-
-        self.blocks = nn.Sequential(*layers)
-        self.ln = nn.LayerNorm(emb_dim)
-        self.lm_head = nn.Linear(emb_dim, vocab_size)
+        self.blocks = nn.Sequential(
+            *[
+                Transformer(
+                    config.emb_dim, config.num_heads, config.block_size, p=config.p
+                )
+                for _ in range(config.num_layers)
+            ]
+        )
+        self.ln = nn.LayerNorm(config.emb_dim)
+        self.lm_head = nn.Linear(config.emb_dim, config.vocab_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         token_emb = self.token_emb(x)
@@ -99,7 +102,7 @@ class MHSelfAttention(nn.Module):
         return out
 
 
-class FeedForward(nn.Module):
+class MLP(nn.Module):
     def __init__(self, emb_dim: int, p: float = 0.2):
         super().__init__()
         self.mlp = nn.Sequential(
@@ -113,7 +116,7 @@ class FeedForward(nn.Module):
         return self.mlp(x)
 
 
-class TransformerLayer(nn.Module):
+class Transformer(nn.Module):
     def __init__(
         self,
         emb_dim: int,
@@ -127,7 +130,7 @@ class TransformerLayer(nn.Module):
 
         self.mhsa = MHSelfAttention(emb_dim, num_heads, head_size, block_size, p=p)
         self.ln1 = nn.LayerNorm(emb_dim)
-        self.ffn = FeedForward(emb_dim, p=p)
+        self.ffn = MLP(emb_dim, p=p)
         self.ln2 = nn.LayerNorm(emb_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

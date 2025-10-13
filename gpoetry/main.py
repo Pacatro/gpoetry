@@ -1,20 +1,11 @@
 from . import config
 from .data import SpanishPoetryDataset, load_from_hf, load_from_txt, DatasetType
-from .model import GPTModel
+from .model import GPTModel, GPTConfig
 from .tokenization import CharTokenizer, TokenizerType, WordTokenizer
 from .train import train
 
 
 def main():
-    print(f"Using device: {config.DEVICE}")
-    print(f"Using dataset: {config.DATASET_URL}")
-    print(
-        f"Using model config: num_heads={config.NUM_HEADS}, num_layers={config.NUM_LAYERS}, block_size={config.BLOCK_SIZE}, emb_dim={config.EMB_DIM}, dropout_p={config.DROPOUT_P}"
-    )
-    print(
-        f"Using training config: epochs={config.EPOCHS}, batch_size={config.BATCH_SIZE}, lr={config.LR}"
-    )
-
     match config.TOKENIZER_TYPE:
         case TokenizerType.WORD:
             tokenizer = WordTokenizer()
@@ -36,9 +27,8 @@ def main():
     ds = SpanishPoetryDataset(texts=texts, tokenizer=tokenizer)
 
     print("Dataset length:", len(ds))
-    print("vocab_size", tokenizer.vocab_size)
 
-    model = GPTModel(
+    gpt_config = GPTConfig(
         vocab_size=tokenizer.vocab_size,
         num_heads=config.NUM_HEADS,
         num_layers=config.NUM_LAYERS,
@@ -46,6 +36,10 @@ def main():
         emb_dim=config.EMB_DIM,
         p=config.DROPOUT_P,
     )
+
+    print(gpt_config)
+
+    model = GPTModel(config=gpt_config)
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
