@@ -1,7 +1,7 @@
 from . import config
-from .data import SpanishPoetryDataset, load_from_file, load_poems
-from .tokenization import WordTokenizer, CharTokenizer, TokenizerType
+from .data import SpanishPoetryDataset, load_from_hf
 from .model import GPoeTry
+from .tokenization import CharTokenizer, TokenizerType, WordTokenizer
 from .train import train
 
 
@@ -22,12 +22,20 @@ def main():
         case TokenizerType.CHAR:
             tokenizer = CharTokenizer()
 
-    # texts = load_poems(config.DATASET_URL, max_samples=config.MAX_SAMPLES)
-    texts = load_from_file("data/datos_sancho_mini.txt")
+    texts = load_from_hf(
+        config.DATASET_URL,
+        column_name=config.DATASET_TEXT_COLUMN,
+        max_samples=config.MAX_SAMPLES,
+    )
+    # texts = load_from_txt("data/datos_sancho_mini.txt")
+    # texts = load_from_csv("data/yoda-corpus.csv")
 
     tokenizer.fit(texts)
 
     ds = SpanishPoetryDataset(texts=texts, tokenizer=tokenizer)
+
+    print("Dataset length:", len(ds))
+    print("vocab_size", tokenizer.vocab_size)
 
     model = GPoeTry(
         vocab_size=tokenizer.vocab_size,

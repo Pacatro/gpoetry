@@ -1,21 +1,30 @@
 from datasets import load_dataset, Dataset as HFDataset
 from torch.utils.data import Dataset as TorchDataset
 import torch
+import polars as pl
 
 from .tokenization import Tokenizer
 
 
-def load_poems(url: str, max_samples: int | None = None) -> list[str]:
+def load_from_hf(
+    url: str, column_name: str, max_samples: int | None = None
+) -> list[str]:
     ds = load_dataset(url, split="train")
     assert isinstance(ds, HFDataset)
 
     if max_samples and max_samples > 0:
         ds = ds.select(range(max_samples))
 
-    return [text for text in ds["content"] if text]
+    return [text for text in ds[column_name] if text]
 
 
-def load_from_file(path: str) -> list[str]:
+def load_from_csv(path: str) -> list[str]:
+    df = pl.read_csv(path)
+    texts = df.filter(pl.col("character") == "YODA")["text"].to_list()
+    return texts
+
+
+def load_from_txt(path: str) -> list[str]:
     with open(path, "r", encoding="utf-8") as f:
         content = f.read()
 

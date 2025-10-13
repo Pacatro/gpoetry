@@ -6,21 +6,22 @@ DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Dataset
 DATASET_URL: str = "andreamorgar/spanish_poetry"
-MAX_SAMPLES: int | None = None
+DATASET_TEXT_COLUMN: str = "content"
+MAX_SAMPLES: int | None = 100
 TOKENIZER_TYPE: TokenizerType = TokenizerType.CHAR
 
 # Model config
-NUM_HEADS: int = 8
-BLOCK_SIZE: int = 1024
+NUM_HEADS: int = 4
+BLOCK_SIZE: int = 128
 NUM_LAYERS: int = 4
-EMB_DIM: int = 256
+EMB_DIM: int = 128
 DROPOUT_P: float = 0.2
 
 # Training config
 EPOCHS: int = 5000
 BATCH_SIZE: int = 32
 LR: float = 3e-4
-TRAIN_SIZE: float = 0.9
+TRAIN_SIZE: float = 0.8
 
 # Generation config
 TEMPERATURE: float = 0.4
