@@ -37,9 +37,16 @@ def main():
         p=config.DROPOUT_P,
     )
 
-    print(gpt_config)
+    print("Model configuration:")
+    print(f"Vocab size: {gpt_config.vocab_size}")
+    print(f"Heads: {gpt_config.num_heads}")
+    print(f"Layers: {gpt_config.num_layers}")
+    print(f"BLocak size: {gpt_config.block_size}")
+    print(f"Embbeding dim: {gpt_config.emb_dim}")
+    print(f"p: {gpt_config.p}")
 
     model = GPTModel(config=gpt_config)
+    print(f"Model:\n{model}")
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 

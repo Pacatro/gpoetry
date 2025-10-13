@@ -13,9 +13,6 @@ class GPTConfig:
     emb_dim: int
     p: float
 
-    def __repr__(self) -> str:
-        return f"Vocab size: {self.vocab_size}\nnum_heads: {self.num_heads}\nnum_layers: {self.num_layers}\nblock_size: {self.block_size}\nemb_dim: {self.emb_dim}\np: {self.p}"
-
 
 class GPTModel(nn.Module):
     def __init__(self, config: GPTConfig):
