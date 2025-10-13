@@ -1,9 +1,19 @@
 from datasets import load_dataset, Dataset as HFDataset
 from torch.utils.data import Dataset as TorchDataset
 import torch
-import polars as pl
 
 from .tokenization import Tokenizer
+
+
+class SpanishPoetryDataset(TorchDataset):
+    def __init__(self, texts: list[str], tokenizer: Tokenizer):
+        self.dataset = [tokenizer.encode(text) for text in texts]
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def __getitem__(self, idx: int):
+        return torch.tensor(self.dataset[idx], dtype=torch.long)
 
 
 def load_from_hf(
@@ -16,12 +26,6 @@ def load_from_hf(
         ds = ds.select(range(max_samples))
 
     return [text for text in ds[column_name] if text]
-
-
-def load_from_csv(path: str) -> list[str]:
-    df = pl.read_csv(path)
-    texts = df.filter(pl.col("character") == "YODA")["text"].to_list()
-    return texts
 
 
 def load_from_txt(path: str) -> list[str]:
@@ -37,14 +41,3 @@ def load_from_txt(path: str) -> list[str]:
             poems.append(poem)
 
     return poems
-
-
-class SpanishPoetryDataset(TorchDataset):
-    def __init__(self, texts: list[str], tokenizer: Tokenizer):
-        self.dataset = [tokenizer.encode(text) for text in texts]
-
-    def __len__(self):
-        return len(self.dataset)
-
-    def __getitem__(self, idx: int):
-        return torch.tensor(self.dataset[idx], dtype=torch.long)

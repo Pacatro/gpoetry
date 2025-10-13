@@ -28,7 +28,6 @@ def main():
         max_samples=config.MAX_SAMPLES,
     )
     # texts = load_from_txt("data/datos_sancho_mini.txt")
-    # texts = load_from_csv("data/yoda-corpus.csv")
 
     tokenizer.fit(texts)
 
@@ -45,6 +44,8 @@ def main():
         emb_dim=config.EMB_DIM,
         p=config.DROPOUT_P,
     )
+
+    print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
     train(
         model,
