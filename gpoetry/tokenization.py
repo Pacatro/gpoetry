@@ -22,17 +22,21 @@ class Tokenizer(ABC):
     def _detokenize(self, tokens: list[str]) -> str:
         raise NotImplementedError("Detokenize method is not implemented")
 
-    def fit(self, texts: list[str]) -> None:
+    def fit(self, texts: list[str] | str) -> None:
         if self._is_fitted:
             raise RuntimeError("Tokenizer is already fitted")
 
         all_tokens = set()
 
-        for text in texts:
-            if not text:
-                continue
-            tokens = self._tokenize(text)
+        if isinstance(texts, str):
+            tokens = self._tokenize(texts)
             all_tokens.update(tokens)
+        else:
+            for text in texts:
+                if not text:
+                    continue
+                tokens = self._tokenize(text)
+                all_tokens.update(tokens)
 
         self.vocab = sorted(all_tokens)
         self.vocab_size = len(self.vocab)

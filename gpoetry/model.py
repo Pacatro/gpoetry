@@ -3,15 +3,17 @@ from torch import nn
 from torch.nn import functional as F
 from dataclasses import dataclass
 
+from . import config
+
 
 @dataclass
 class GPTConfig:
     vocab_size: int
-    num_heads: int
-    num_layers: int
-    block_size: int
-    emb_dim: int
-    p: float
+    num_heads: int = config.NUM_HEADS
+    num_layers: int = config.NUM_LAYERS
+    block_size: int = config.BLOCK_SIZE
+    emb_dim: int = config.EMB_DIM
+    p: float = config.DROPOUT_P
 
 
 class GPTModel(nn.Module):

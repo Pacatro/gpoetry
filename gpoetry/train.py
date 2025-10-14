@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, random_split
-from torch.nn.utils.rnn import pad_sequence
 
 from .data import SpanishPoetryDataset
 
@@ -12,19 +11,13 @@ def train_step(
     loss_fn: nn.Module,
     optimizer: torch.optim.Optimizer,
     device: str,
-    block_size: int | None = None,
 ) -> float:
+    model.train()
+
     train_loss = 0
     for batch in train_dataloader:
-        if not block_size:
-            batch = batch[:block_size].to(device)
-        else:
-            batch = batch.to(device)
-
-        # We use all tokens except the last one (x) for training the model
-        # Then we use all tokens (y) to use it in the loss function
-        x = batch[:, :-1]
-        y = batch[:, 1:]
+        x, y = batch
+        x, y = x.to(device), y.to(device)
 
         logits = model(x)
 
@@ -33,6 +26,7 @@ def train_step(
         b, t, v = logits.shape
         logits = logits.reshape(b * t, v)
         y = y.reshape(b * t)
+
         loss = loss_fn(logits, y)
         optimizer.zero_grad()
         loss.backward()
@@ -44,26 +38,19 @@ def train_step(
     return train_loss
 
 
-def test_step(
+def val_step(
     model: nn.Module,
-    test_dataloader: DataLoader,
+    val_dataloader: DataLoader,
     loss_fn: nn.Module,
     device: str,
-    block_size: int | None = None,
 ) -> float:
     model.eval()
-    test_loss = 0
+    val_loss = 0
 
     with torch.inference_mode():
-        for batch in test_dataloader:
-            if not block_size:
-                inputs = batch.to(device)
-            else:
-                inputs = batch[:block_size].to(device)
-
-            x = inputs[:, :-1]
-            y = inputs[:, 1:]
-
+        for batch in val_dataloader:
+            x, y = batch
+            x, y = x.to(device), y.to(device)
             logits = model(x)
 
             batch_size_current, seq_len, vocab_size = logits.shape
@@ -72,10 +59,10 @@ def test_step(
 
             loss = loss_fn(logits, y)
 
-            test_loss += loss.item()
+            val_loss += loss.item()
 
-    test_loss /= len(test_dataloader)
-    return test_loss
+    val_loss /= len(val_dataloader)
+    return val_loss
 
 
 def train(
@@ -87,32 +74,28 @@ def train(
     lr: float = 1e-3,
     pad_token_id: int = 0,
     device: str = "cpu",
-    block_size: int | None = None,
 ) -> None:
     model.to(device)
 
     n = len(dataset)
     train_len = int(train_size * n)
     val_len = n - train_len
-    x_train, x_test = random_split(dataset, [train_len, val_len])
+    x_train, x_val = random_split(dataset, [train_len, val_len])
+
+    print(f"Train length: {len(x_train)}")
+    print(f"val length: {len(x_val)}")
 
     train_loader = DataLoader(
         x_train,
         batch_size=batch_size,
         num_workers=4,
-        collate_fn=lambda x: pad_sequence(
-            x, batch_first=True, padding_value=pad_token_id
-        ),
         pin_memory=True,
         shuffle=True,
     )
-    test_loader = DataLoader(
-        x_test,
+    val_loader = DataLoader(
+        x_val,
         batch_size=batch_size,
         num_workers=4,
-        collate_fn=lambda x: pad_sequence(
-            x, batch_first=True, padding_value=pad_token_id
-        ),
         pin_memory=True,
     )
 
@@ -121,27 +104,22 @@ def train(
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
 
     for epoch in range(1, epochs + 1):
-        model.train()
-
         train_loss = train_step(
             model=model,
             train_dataloader=train_loader,
             loss_fn=loss_fn,
             optimizer=optimizer,
             device=device,
-            block_size=block_size,
         )
-        test_loss = test_step(
+        val_loss = val_step(
             model=model,
-            test_dataloader=test_loader,
+            val_dataloader=val_loader,
             loss_fn=loss_fn,
             device=device,
-            block_size=block_size,
         )
 
-        if epoch == 1 or epoch % 10 == 0:
-            print(
-                f"Epoch: {epoch} | "
-                f"train_loss: {train_loss:.4f} | "
-                f"test_loss: {test_loss:.4f} | "
-            )
+        print(
+            f"Epoch: {epoch} | "
+            f"train_loss: {train_loss:.4f} | "
+            f"val_loss: {val_loss:.4f} | "
+        )
