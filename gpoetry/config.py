@@ -8,7 +8,7 @@ DEVICE: str = "cuda" if torch.cuda.is_available() else "cpu"
 # Dataset
 DATASET_URL: str = "andreamorgar/spanish_poetry"
 DATASET_TEXT_COLUMN: str = "content"
-MAX_SAMPLES: int | None = 300
+MAX_SAMPLES: int | None = None
 TOKENIZER_TYPE: TokenizerType = TokenizerType.CHAR
 DATASET_TYPE: DatasetType = DatasetType.HUGGINGFACE
 INIT_TOKEN: str = "<|start|>"
