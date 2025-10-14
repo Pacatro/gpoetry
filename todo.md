@@ -23,10 +23,15 @@ List of things to do in the future.
 
 ## Training
 
-- [ ] Implement training loop
-- [ ] Maybe use lightning?
+- [x] Implement training loop
 
 ## Inference
 
-- [ ] Test model inference
-- [ ] Create a CLI chat
+- [x] Test model inference
+
+## Production
+
+- [ ] Refactor code to use Lightning
+- [ ] Create a FastAPI server
+- [ ] Create a Vue frontend
+- [ ] Create a Docker image
