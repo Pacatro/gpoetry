@@ -1,6 +1,5 @@
 import torch
 import torch.nn.functional as F
-import sys
 import time
 
 from .model import GPTModel, GPTConfig
@@ -30,11 +29,14 @@ def generate(
     context = torch.tensor([[start_token]], dtype=torch.long, device=device)
     initial_str = tokenizer.decode(context[0].tolist())
 
-    print(initial_str, end="")
-    sys.stdout.flush()
+    print(initial_str, end="", flush=True)
 
+    generated_text = ""
     with torch.no_grad():
         for _ in range(gen_limit):
+            if config.END_TOKEN in generated_text:
+                break
+
             # Select the last "block_size" tokens
             x = context[:, -block_size:]
             logits = model(x)
@@ -47,11 +49,13 @@ def generate(
 
             probs = F.softmax(logits, dim=-1)
             # Select and index in base of the probabilities
-            idx_next = torch.multinomial(probs, num_samples=1)
-            char = tokenizer.decode(idx_next[0].tolist())
+            next_token = torch.multinomial(probs, num_samples=1)
+            text = tokenizer.decode(next_token[0].tolist())
 
-            print(char, end="")
-            sys.stdout.flush()
+            print(text, end="", flush=True)
+
+            generated_text += text
+
             # Add the new generated token to the context
-            context = torch.cat((context, idx_next), dim=1)
+            context = torch.cat((context, next_token), dim=1)
             time.sleep(0.02)

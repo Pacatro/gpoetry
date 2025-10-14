@@ -53,7 +53,8 @@ def main():
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
-    if not Path("model.pt").exists():
+    if not Path(config.MODEL_PATH).exists():
+        print("Training model...")
         train(
             model,
             ds,
@@ -65,10 +66,11 @@ def main():
         )
 
         model.eval()
-        torch.save(model.state_dict(), "model.pt")
+        torch.save(model.state_dict(), config.MODEL_PATH)
 
+    print("Generating...\n")
     generate(
-        model_path="model.pt",
+        model_path=config.MODEL_PATH,
         gpt_config=gpt_config,
         tokenizer=tokenizer,
         temperature=config.TEMPERATURE,

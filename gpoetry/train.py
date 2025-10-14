@@ -24,8 +24,8 @@ def train_step(
         # The logits have shape (batch_size (b), sequence_len (t), vocab_size (v))
         # To use the loss function we need to reshape them to (batch_size * sequence_len, vocab_size)
         b, t, v = logits.shape
-        logits = logits.reshape(b * t, v)
-        y = y.reshape(b * t)
+        logits = logits.view(b * t, v)
+        y = y.view(b * t)
 
         loss = loss_fn(logits, y)
         optimizer.zero_grad()
@@ -54,8 +54,8 @@ def val_step(
             logits = model(x)
 
             batch_size_current, seq_len, vocab_size = logits.shape
-            logits = logits.reshape(batch_size_current * seq_len, vocab_size)
-            y = y.reshape(batch_size_current * seq_len)
+            logits = logits.view(batch_size_current * seq_len, vocab_size)
+            y = y.view(batch_size_current * seq_len)
 
             loss = loss_fn(logits, y)
 
@@ -82,9 +82,6 @@ def train(
     val_len = n - train_len
     x_train, x_val = random_split(dataset, [train_len, val_len])
 
-    print(f"Train length: {len(x_train)}")
-    print(f"val length: {len(x_val)}")
-
     train_loader = DataLoader(
         x_train,
         batch_size=batch_size,
@@ -100,7 +97,7 @@ def train(
     )
 
     # If we area using padding tokens we need to remove them from the logits
-    loss_fn = nn.CrossEntropyLoss(ignore_index=pad_token_id)
+    loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
 
     for epoch in range(1, epochs + 1):
