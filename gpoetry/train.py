@@ -72,7 +72,6 @@ def train(
     batch_size: int = 32,
     epochs: int = 10,
     lr: float = 1e-3,
-    pad_token_id: int = 0,
     device: str = "cpu",
 ) -> None:
     model.to(device)
