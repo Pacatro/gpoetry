@@ -1,14 +1,8 @@
 from datasets import load_dataset, Dataset as HFDataset
 from torch.utils.data import Dataset as TorchDataset
 import torch
-from enum import Enum
 
 from .tokenization import Tokenizer
-
-
-class DatasetType(Enum):
-    HUGGINGFACE = "huggingface"
-    TXT = "txt"
 
 
 class SpanishPoetryDataset(TorchDataset):
@@ -45,10 +39,3 @@ def load_from_hf(
     texts = [f"{init_token}\n{text}\n{end_token}" for text in ds[column_name] if text]
 
     return "".join(texts)
-
-
-def load_from_txt(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as f:
-        content = f.read()
-
-    return content

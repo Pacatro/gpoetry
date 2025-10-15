@@ -74,8 +74,6 @@ def train(
     lr: float = 1e-3,
     device: str = "cpu",
 ) -> None:
-    model.to(device)
-
     n = len(dataset)
     train_len = int(train_size * n)
     val_len = n - train_len

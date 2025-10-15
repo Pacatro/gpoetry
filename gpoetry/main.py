@@ -2,7 +2,7 @@ import torch
 from pathlib import Path
 
 from . import config
-from .data import SpanishPoetryDataset, load_from_hf, load_from_txt, DatasetType
+from .data import SpanishPoetryDataset, load_from_hf
 from .model import GPTModel, GPTConfig
 from .tokenization import CharTokenizer, TokenizerType, WordTokenizer
 from .train import train
@@ -10,27 +10,21 @@ from .generation import generate
 
 
 def main():
+    print(f"Device {config.DEVICE}")
+
     match config.TOKENIZER_TYPE:
         case TokenizerType.WORD:
             tokenizer = WordTokenizer()
         case TokenizerType.CHAR:
             tokenizer = CharTokenizer()
 
-    match config.DATASET_TYPE:
-        case DatasetType.HUGGINGFACE:
-            texts = load_from_hf(
-                config.DATASET_URL,
-                init_token=config.INIT_TOKEN,
-                end_token=config.END_TOKEN,
-                column_name=config.DATASET_TEXT_COLUMN,
-                max_samples=config.MAX_SAMPLES,
-            )
-        case DatasetType.TXT:
-            texts = load_from_txt(
-                "data/datos_sancho_mini.txt",
-            )
-
-    print(f"Device {config.DEVICE}")
+    texts = load_from_hf(
+        config.DATASET_URL,
+        init_token=config.INIT_TOKEN,
+        end_token=config.END_TOKEN,
+        column_name=config.DATASET_TEXT_COLUMN,
+        max_samples=config.MAX_SAMPLES,
+    )
 
     tokenizer.fit(texts)
 
@@ -49,7 +43,9 @@ def main():
     print(f"Embbeding dim: {gpt_config.emb_dim}")
     print(f"p: {gpt_config.p}")
 
-    model = GPTModel(config=gpt_config)
+    model = GPTModel(config=gpt_config).to(config.DEVICE)
+
+    model.compile()
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
