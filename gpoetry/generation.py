@@ -1,15 +1,28 @@
 import torch
 import torch.nn.functional as F
 import time
+import json
 
 from .model import GPTModel, GPTConfig
 from .tokenization import Tokenizer
 from . import config
 
 
+def load_model(model_path: str, gpt_config_path: str) -> GPTModel:
+    with open(gpt_config_path, "r") as f:
+        data = json.load(f)
+
+    gpt_config = GPTConfig(**data)
+    checkpoint = torch.load(model_path)
+    model = GPTModel(gpt_config)
+    model.load_state_dict(checkpoint)
+
+    return model
+
+
 def generate(
     model_path: str,
-    gpt_config: GPTConfig,
+    gpt_config_path: str,
     tokenizer: Tokenizer,
     temperature: float,
     top_k: int,
@@ -18,9 +31,7 @@ def generate(
     gen_limit: int = 1000,
 ) -> None:
     # Load the model
-    model = GPTModel(gpt_config)
-    checkpoint = torch.load(model_path)
-    model.load_state_dict(checkpoint)
+    model = load_model(model_path, gpt_config_path)
     model.to(device)
     model.eval()
 

@@ -19,6 +19,7 @@ NUM_LAYERS: int = 4
 EMB_DIM: int = 512
 DROPOUT_P: float = 0.2
 MODEL_PATH: str = "gpoetry.pt"
+MODEL_CONFIG_PATH: str = "gpoetry.json"
 
 # Training config
 EPOCHS: int = 10

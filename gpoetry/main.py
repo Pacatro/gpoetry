@@ -1,5 +1,7 @@
 import torch
+import json
 from pathlib import Path
+from dataclasses import asdict
 
 from . import config
 from .data import SpanishPoetryDataset, load_from_hf
@@ -9,8 +11,13 @@ from .train import train
 from .generation import generate
 
 
+def save_model_config(gpt_config: GPTConfig) -> None:
+    with open(config.MODEL_CONFIG_PATH, "w") as f:
+        json.dump(asdict(gpt_config), f, indent=4)
+
+
 def main():
-    print(f"Device {config.DEVICE}")
+    print(f"Device: {config.DEVICE}")
 
     match config.TOKENIZER_TYPE:
         case TokenizerType.WORD:
@@ -39,13 +46,14 @@ def main():
     print(f"Vocab size: {gpt_config.vocab_size}")
     print(f"Heads: {gpt_config.num_heads}")
     print(f"Layers: {gpt_config.num_layers}")
-    print(f"BLocak size: {gpt_config.block_size}")
+    print(f"Block size: {gpt_config.block_size}")
     print(f"Embbeding dim: {gpt_config.emb_dim}")
     print(f"p: {gpt_config.p}")
 
     model = GPTModel(config=gpt_config).to(config.DEVICE)
 
-    model.compile()
+    # FIXME: Can't compile the model because my GPU is too old
+    # model.compile()
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
@@ -63,11 +71,12 @@ def main():
 
         model.eval()
         torch.save(model.state_dict(), config.MODEL_PATH)
+        save_model_config(gpt_config)
 
     print("Generating...\n")
     generate(
         model_path=config.MODEL_PATH,
-        gpt_config=gpt_config,
+        gpt_config_path=config.MODEL_CONFIG_PATH,
         tokenizer=tokenizer,
         temperature=config.TEMPERATURE,
         top_k=config.TOP_K,
