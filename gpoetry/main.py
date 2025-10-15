@@ -39,7 +39,8 @@ def main():
         text=texts, tokenizer=tokenizer, block_size=config.BLOCK_SIZE
     )
 
-    print("Dataset length:", len(ds))
+    if config.MAX_SAMPLES:
+        print(f"Max samples: {config.MAX_SAMPLES}")
 
     gpt_config = GPTConfig(vocab_size=tokenizer.vocab_size)
 
@@ -52,7 +53,7 @@ def main():
 
     model = GPTModel(config=gpt_config).to(config.DEVICE)
 
-    # FIXME: Can't compile the model because my GPU is too old
+    # Can't compile the model because my GPU is too old :'D
     # model.compile()
 
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
