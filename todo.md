@@ -29,9 +29,11 @@ List of things to do in the future.
 
 - [x] Test model inference
 
-## Production
+## Improvements
 
-- [ ] Refactor code to use Lightning
+- [ ] Better model saving/loading
+- [ ] Upload model to Hugging Face
+- [ ] Refactor code to use Lightning (?)
 - [ ] Create a FastAPI server
-- [ ] Create a Vue frontend
+- [ ] Create a Vue frontend to test model
 - [ ] Create a Docker image
