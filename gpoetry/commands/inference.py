@@ -1,85 +1,11 @@
 import typer
 from typing import Annotated
-from safetensors.torch import load_file
-from pathlib import Path
-import json
 
 from ..core import config
-from ..core.tokenization import (
-    TokenizerType,
-    TokenizerConfig,
-    Tokenizer,
-    WordTokenizer,
-    CharTokenizer,
-)
-from ..core.model import GPTModel, GPTConfig
 from ..core.generation import generate
+from ..core.model_io import load_model
 
 inference_app = typer.Typer()
-
-
-def decode_tokenizer_config(dct: dict) -> dict:
-    """Decodes the tokenizer configuration from a dictionary.
-
-    Args:
-        dct (dict): The dictionary to decode.
-
-    Returns:
-        dict: The decoded dictionary.
-    """
-    if "itos" and "stoi" in dct:
-        dct["itos"] = {int(k): v for k, v in dct["itos"].items()}
-        dct["stoi"] = {k: int(v) for k, v in dct["stoi"].items()}
-
-    return dct
-
-
-def load_model_tokenizer() -> tuple[GPTModel, Tokenizer]:
-    """Loads the model and tokenizer from the models folder.
-
-    Raises:
-        FileNotFoundError: If the models folder is not found.
-        FileNotFoundError: If no models are found.
-
-    Returns:
-        tuple[GPTModel, Tokenizer]: The loaded model and tokenizer.
-    """
-    models_folder = Path(config.MODELS_FOLDER)
-
-    if not models_folder.exists():
-        raise FileNotFoundError(f"Models folder not found: {models_folder}")
-
-    models_dirs = [d for d in models_folder.iterdir() if d.is_dir()]
-
-    if len(models_dirs) == 0:
-        raise FileNotFoundError("No models found")
-
-    model_dir = max(models_dirs)
-
-    model_path = model_dir / f"{model_dir.name}.safetensors"
-    config_path = model_dir / "config.json"
-    tokenizer_config_path = model_dir / "tokenizer.json"
-
-    with open(config_path, "r") as f:
-        config_data = json.load(f)
-
-    loaded_state_dict = load_file(model_path)
-    gpt_config = GPTConfig(**config_data)
-    model = GPTModel(gpt_config).to(config.DEVICE)
-    model.load_state_dict(loaded_state_dict)
-
-    with open(tokenizer_config_path, "r") as f:
-        tokenizer_config_data = json.load(f, object_hook=decode_tokenizer_config)
-
-    tokenizer_config = TokenizerConfig(**tokenizer_config_data)
-
-    match tokenizer_config.tk_type:
-        case TokenizerType.WORD.value:
-            tokenizer = WordTokenizer(tokenizer_config)
-        case TokenizerType.CHAR.value:
-            tokenizer = CharTokenizer(tokenizer_config)
-
-    return model, tokenizer
 
 
 @inference_app.command(name="inference", help="Run the inference")
@@ -104,7 +30,7 @@ def inference_cli(
     if config.MAX_SAMPLES:
         print(f"Max samples: {config.MAX_SAMPLES}")
 
-    model, tokenizer = load_model_tokenizer()
+    model, tokenizer = load_model()
 
     generate(
         model=model,

@@ -1,44 +1,18 @@
-import json
-from dataclasses import asdict
-from datetime import datetime
-from pathlib import Path
-from typing import Annotated
-
 import typer
-from safetensors.torch import save_file
+from typing import Annotated
 
 from ..core import config
 from ..core.data import SpanishPoetryDataset, load_from_hf
 from ..core.model import GPTConfig, GPTModel
 from ..core.tokenization import (
     CharTokenizer,
-    TokenizerConfig,
     TokenizerType,
     WordTokenizer,
 )
 from ..core.training import train
+from ..core.model_io import save_model
 
 train_app = typer.Typer()
-
-
-def save_model(model: GPTModel, tokenizer_config: TokenizerConfig) -> None:
-    """Saves the model and tokenizer configuration.
-
-    Args:
-        model (GPTModel): The model to save.
-        tokenizer_config (TokenizerConfig): The tokenizer configuration to save.
-    """
-    model_name = f"gpoetry_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    model_dir = Path(config.MODELS_FOLDER) / model_name
-
-    model_dir.mkdir(exist_ok=True, parents=True)
-    save_file(model.state_dict(), model_dir / f"{model_name}.safetensors")
-
-    with open(model_dir / "config.json", "w") as f:
-        json.dump(asdict(model.config), f, indent=4)
-
-    with open(model_dir / "tokenizer.json", "w") as f:
-        json.dump(asdict(tokenizer_config), f, indent=4)
 
 
 @train_app.command(name="train", help="Train the model")
@@ -129,4 +103,4 @@ def train_cli(
         device=config.DEVICE,
     )
 
-    save_model(model, tokenizer.config)
+    save_model(model, tokenizer)
