@@ -113,7 +113,7 @@ def train_cli(
             device=config.DEVICE,
             temperature=config.TEMPERATURE,
             top_k=config.TOP_K,
-            gen_limit=config.GEN_LIMIT,
+            gen_limit=200,
             block_size=config.BLOCK_SIZE,
         )
 
