@@ -16,7 +16,7 @@ from ..core.tokenization import (
     TokenizerType,
     WordTokenizer,
 )
-from ..core.train import train
+from ..core.training import train
 
 train_app = typer.Typer()
 
@@ -40,6 +40,12 @@ def train_cli(
     tokenization: Annotated[
         TokenizerType, typer.Option("--tokenization", "-t", help="The tokenizer type")
     ],
+    max_samples: Annotated[
+        int | None,
+        typer.Option(
+            "--max-samples", "-m", help="The maximum number of samples from the dataset"
+        ),
+    ] = config.MAX_SAMPLES,
     batch_size: Annotated[
         int, typer.Option("--batch-size", "-b", help="The training batch_size")
     ] = config.BATCH_SIZE,
@@ -68,17 +74,17 @@ def train_cli(
         init_token=config.INIT_TOKEN,
         end_token=config.END_TOKEN,
         column_name=config.DATASET_TEXT_COLUMN,
-        max_samples=config.MAX_SAMPLES,
+        max_samples=max_samples,
     )
+
+    if max_samples:
+        print(f"Max samples: {max_samples}")
 
     tokenizer.fit(corpus)
 
     ds = SpanishPoetryDataset(
         corpus=corpus, tokenizer=tokenizer, block_size=config.BLOCK_SIZE
     )
-
-    if config.MAX_SAMPLES:
-        print(f"Max samples: {config.MAX_SAMPLES}")
 
     gpt_config = GPTConfig(vocab_size=tokenizer.config.vocab_size)
 
