@@ -28,12 +28,3 @@ List of things to do in the future.
 ## Inference
 
 - [x] Test model inference
-
-## Improvements
-
-- [x] Better model saving/loading (maybe use [`safetensors`](https://github.com/huggingface/safetensors)?)
-- [ ] Upload model to Hugging Face
-- [ ] Refactor code to use Lightning (?)
-- [ ] Create a FastAPI server
-- [ ] Create a Vue frontend to test model
-- [ ] Create a Docker image
