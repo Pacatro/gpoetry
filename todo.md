@@ -4,7 +4,7 @@ List of things to do in the future.
 
 ## Dataset
 
-- [x] Test spanish poems datasets ([https://huggingface.co/datasets/andreamorgar/spanish_poetry])
+- [x] Test spanish poems datasets (<https://huggingface.co/datasets/andreamorgar/spanish_poetry>)
 
 ## Tokenization
 
@@ -31,7 +31,7 @@ List of things to do in the future.
 
 ## Improvements
 
-- [ ] Better model saving/loading
+- [x] Better model saving/loading (maybe use [`safetensors`](https://github.com/huggingface/safetensors)?)
 - [ ] Upload model to Hugging Face
 - [ ] Refactor code to use Lightning (?)
 - [ ] Create a FastAPI server

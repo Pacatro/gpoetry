@@ -6,8 +6,8 @@ from .tokenization import Tokenizer
 
 
 class SpanishPoetryDataset(TorchDataset):
-    def __init__(self, text: str, tokenizer: Tokenizer, block_size: int):
-        self.tokens = tokenizer.encode(text)
+    def __init__(self, corpus: str, tokenizer: Tokenizer, block_size: int):
+        self.tokens = tokenizer.encode(corpus)
         self.block_size = block_size
 
     def __len__(self):

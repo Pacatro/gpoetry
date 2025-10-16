@@ -5,8 +5,10 @@ description = "A new GPT model that talks like a poet"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "datasets>=4.1.1",
-    "torch>=2.8.0",
+  "datasets>=4.1.1",
+  "safetensors>=0.6.2",
+  "torch>=2.8.0",
+  "typer>=0.19.2",
 ]
 
 [dependency-groups]
@@ -32,4 +34,4 @@ testpaths = ["tests"]
 addopts = "-v"
 
 [project.scripts]
-gpoetry = "gpoetry.main:main"
+gpoetry = "gpoetry.main:app"

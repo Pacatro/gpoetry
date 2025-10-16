@@ -10,8 +10,8 @@ wheels/
 .venv
 
 # Models
+models/
+*.safetensors
 *.pt
-
-# JSON
 *.json
 

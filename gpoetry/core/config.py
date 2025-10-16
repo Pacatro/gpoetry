@@ -18,8 +18,7 @@ BLOCK_SIZE: int = 512
 NUM_LAYERS: int = 4
 EMB_DIM: int = 512
 DROPOUT_P: float = 0.2
-MODEL_PATH: str = "gpoetry.pt"
-MODEL_CONFIG_PATH: str = "gpoetry.json"
+MODELS_FOLDER: str = "models"
 
 # Training config
 EPOCHS: int = 5
@@ -30,3 +29,4 @@ TRAIN_SIZE: float = 0.8
 # Generation config
 TEMPERATURE: float = 0.6
 TOP_K: int = 50
+GEN_LIMIT: int = 1000

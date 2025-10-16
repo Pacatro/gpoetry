@@ -2,7 +2,14 @@ import pytest
 import torch
 from torch import nn
 
-from gpoetry.model import MLP, GPTConfig, Head, MHSelfAttention, Transformer, GPTModel
+from gpoetry.core.model import (
+    MLP,
+    GPTConfig,
+    Head,
+    MHSelfAttention,
+    Transformer,
+    GPTModel,
+)
 
 
 class TestHead:
