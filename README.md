@@ -22,50 +22,73 @@ Follow these steps to run the project:
     uv sync
     ```
 
-4. Run tests
+3. **Run tests**
 
     ```bash
     uv run pytest
     ```
 
-3. **Run the application**
+4. **Run the application**
 
     To see all available commands and options, run:
 
     ```bash
-    uv run gpoetry
+    uv run gpoetry --help
     ```
 
 ## Usage
 
-The main entry point for the application is `gpoetry/main.py`. Running `uv run gpoetry` will execute the following workflow:
+The application is structured as a CLI with two main commands: `train` and `inference`.
 
-1. **Configuration**: Loads settings from `gpoetry/config.py`.
-2. **Tokenization**: Fits a tokenizer (`CharTokenizer` or `WordTokenizer`) on the loaded text.
-3. **Training**: If a trained model file (specified by `MODEL_PATH`) is not found, it will train a new model using the parameters in the configuration file and save it.
-4. **Generation**: Generates new text using the trained model.
+### Training the model
 
-## Configuration
+To train a new model, use the `train` command. This will train a new model using the parameters in the configuration file and save it to the `models` directory.
 
-The entire project can be configured by modifying the values in `gpoetry/config.py`. Here are some of the key options:
+```bash
+uv run gpoetry train [OPTIONS]
+```
 
-| Parameter | Description | Default |
+**Options:**
+
+| Option | Description | Default |
 | --- | --- | --- |
-| `DEVICE` | The device to run the model on. | `"cuda"` or `"cpu"` |
-| `TOKENIZER_TYPE` | The tokenization strategy to use (`CHAR` or `WORD`). | `TokenizerType.CHAR` |
-| `MODEL_PATH` | Path to save and load the trained model. | `"gpoetry.pt"` |
-| `NUM_HEADS` | Number of attention heads in the Transformer blocks. | `4` |
-| `NUM_LAYERS` | Number of Transformer blocks. | `4` |
-| `EMB_DIM` | Embedding dimension for tokens and positions. | `512` |
-| `EPOCHS` | Number of training epochs. | `10` |
-| `BATCH_SIZE` | Batch size for training. | `32` |
-| `LR` | Learning rate for the optimizer. | `3e-4` |
-| `TEMPERATURE` | Controls the randomness of the generated text. | `0.4` |
-| `TOP_K` | Samples from the top K most likely next tokens. | `50` |
+| `-t`, `--tokenization` | The tokenizer type (`word` or `char`). | `char` |
+| `-b`, `--batch-size` | The training batch size. | `32` |
+| `-e`, `--epochs` | The number of epochs. | `5` |
+| `-l`, `--lr` | The learning rate. | `3e-4` |
+| `-s`, `--train-size` | The training split size. | `0.8` |
+
+Example of training with word tokenization:
+
+```bash
+uv run gpoetry train --tokenization word
+```
+
+### Generating poetry
+
+To generate poetry with a trained model, use the `inference` command. This command will load the latest model from the `models` directory and generate text.
+
+```bash
+uv run gpoetry inference [OPTIONS]
+```
+
+**Options:**
+
+| Option | Description | Default |
+| --- | --- | --- |
+| `-t`, `--temperature` | Controls the randomness of the generated text. | `0.6`|
+| `-k`, `--top-k` | Samples from the top K most likely next tokens. | `50` |
+| `-l`, `--gen-limit` | The generation limit in tokens. | `1000` |
+
+Example of generating text with a higher temperature:
+
+```bash
+uv run gpoetry inference --temperature 0.8
+```
 
 ## Model Architecture
 
-GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, implemented in `gpoetry/model.py`. It consists of:
+GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, implemented in `gpoetry/core/model.py`. It consists of:
 
 - **Token and Positional Embeddings**: To represent the input tokens and their positions in the sequence.
 - **Transformer Blocks**: A stack of `NUM_LAYERS` blocks. Each block contains:
@@ -76,5 +99,5 @@ GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, i
 
 ## Dataset
 
-This project use the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace.
+This project uses the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace.
 
