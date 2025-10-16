@@ -36,6 +36,10 @@ def load_from_hf(
     if max_samples and max_samples > 0:
         ds = ds.select(range(max_samples))
 
-    texts = [f"{init_token}\n{text}\n{end_token}" for text in ds[column_name] if text]
+    texts = [
+        f"{init_token}\n{text.strip()}\n{end_token}\n\n"
+        for text in ds[column_name]
+        if text
+    ]
 
     return "".join(texts)
