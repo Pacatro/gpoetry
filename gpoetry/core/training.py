@@ -12,6 +12,18 @@ def train_step(
     optimizer: torch.optim.Optimizer,
     device: str,
 ) -> float:
+    """Performs a single training step.
+
+    Args:
+        model (nn.Module): The model to train.
+        train_dataloader (DataLoader): The training dataloader.
+        loss_fn (nn.Module): The loss function.
+        optimizer (torch.optim.Optimizer): The optimizer.
+        device (str): The device to use for training.
+
+    Returns:
+        float: The training loss.
+    """
     model.train()
 
     train_loss = 0
@@ -44,6 +56,17 @@ def val_step(
     loss_fn: nn.Module,
     device: str,
 ) -> float:
+    """Performs a single validation step.
+
+    Args:
+        model (nn.Module): The model to validate.
+        val_dataloader (DataLoader): The validation dataloader.
+        loss_fn (nn.Module): The loss function.
+        device (str): The device to use for validation.
+
+    Returns:
+        float: The validation loss.
+    """
     model.eval()
     val_loss = 0
 
@@ -74,6 +97,17 @@ def train(
     lr: float = 1e-3,
     device: str = "cpu",
 ) -> None:
+    """Trains the model.
+
+    Args:
+        model (nn.Module): The model to train.
+        dataset (SpanishPoetryDataset): The dataset to use for training.
+        train_size (float, optional): The training size. Defaults to 0.8.
+        batch_size (int, optional): The batch size. Defaults to 32.
+        epochs (int, optional): The number of epochs. Defaults to 10.
+        lr (float, optional): The learning rate. Defaults to 1e-3.
+        device (str, optional): The device to use for training. Defaults to "cpu".
+    """
     n = len(dataset)
     train_len = int(train_size * n)
     val_len = n - train_len

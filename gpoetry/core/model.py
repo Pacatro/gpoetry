@@ -8,7 +8,9 @@ from . import config
 
 @dataclass
 class GPTConfig:
-    vocab_size: int
+    """GPT model configuration."""
+
+    vocab_size: int = 0
     num_heads: int = config.NUM_HEADS
     num_layers: int = config.NUM_LAYERS
     block_size: int = config.BLOCK_SIZE
@@ -17,7 +19,14 @@ class GPTConfig:
 
 
 class GPTModel(nn.Module):
+    """A GPT model."""
+
     def __init__(self, config: GPTConfig):
+        """Initializes the model.
+
+        Args:
+            config (GPTConfig): The model configuration.
+        """
         super().__init__()
         self.config = config
 
@@ -36,6 +45,17 @@ class GPTModel(nn.Module):
         self.lm_head = nn.Linear(config.emb_dim, config.vocab_size)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Performs a forward pass of the model.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Raises:
+            ValueError: If the sequence length is greater than the positional embedding size.
+
+        Returns:
+            torch.Tensor: The output logits.
+        """
         token_emb = self.token_emb(x)
 
         seq_len = x.shape[1]
@@ -55,7 +75,17 @@ class GPTModel(nn.Module):
 
 
 class Head(nn.Module):
+    """A single self-attention head."""
+
     def __init__(self, emb_dim: int, head_size: int, block_size: int, p: float = 0.2):
+        """Initializes the head.
+
+        Args:
+            emb_dim (int): The embedding dimension.
+            head_size (int): The head size.
+            block_size (int): The block size.
+            p (float, optional): The dropout probability. Defaults to 0.2.
+        """
         super().__init__()
 
         self.querie = nn.Linear(emb_dim, head_size, bias=False)
@@ -65,6 +95,14 @@ class Head(nn.Module):
         self.dropout = nn.Dropout(p)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Performs a forward pass of the head.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The output tensor.
+        """
         k = self.key(x)
         q = self.querie(x)
         v = self.value(x)
@@ -82,6 +120,8 @@ class Head(nn.Module):
 
 
 class MHSelfAttention(nn.Module):
+    """Multi-head self-attention."""
+
     def __init__(
         self,
         emb_dim: int,
@@ -90,6 +130,15 @@ class MHSelfAttention(nn.Module):
         block_size: int,
         p: float = 0.2,
     ):
+        """Initializes the multi-head self-attention module.
+
+        Args:
+            emb_dim (int): The embedding dimension.
+            num_heads (int): The number of heads.
+            head_size (int): The head size.
+            block_size (int): The block size.
+            p (float, optional): The dropout probability. Defaults to 0.2.
+        """
         super().__init__()
 
         self.heads = nn.ModuleList(
@@ -98,13 +147,29 @@ class MHSelfAttention(nn.Module):
         self.dropout = nn.Dropout(p)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Performs a forward pass of the multi-head self-attention module.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The output tensor.
+        """
         out = torch.cat([h(x) for h in self.heads], dim=-1)
         out = self.dropout(out)
         return out
 
 
 class MLP(nn.Module):
+    """A multi-layer perceptron."""
+
     def __init__(self, emb_dim: int, p: float = 0.2):
+        """Initializes the MLP.
+
+        Args:
+            emb_dim (int): The embedding dimension.
+            p (float, optional): The dropout probability. Defaults to 0.2.
+        """
         super().__init__()
         self.mlp = nn.Sequential(
             nn.Linear(emb_dim, emb_dim * 4),
@@ -114,10 +179,20 @@ class MLP(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Performs a forward pass of the MLP.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The output tensor.
+        """
         return self.mlp(x)
 
 
 class Transformer(nn.Module):
+    """A single transformer block."""
+
     def __init__(
         self,
         emb_dim: int,
@@ -125,6 +200,14 @@ class Transformer(nn.Module):
         block_size: int,
         p: float = 0.2,
     ):
+        """Initializes the transformer block.
+
+        Args:
+            emb_dim (int): The embedding dimension.
+            num_heads (int): The number of heads.
+            block_size (int): The block size.
+            p (float, optional): The dropout probability. Defaults to 0.2.
+        """
         super().__init__()
 
         head_size = emb_dim // num_heads
@@ -135,6 +218,14 @@ class Transformer(nn.Module):
         self.ln2 = nn.LayerNorm(emb_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """Performs a forward pass of the transformer block.
+
+        Args:
+            x (torch.Tensor): The input tensor.
+
+        Returns:
+            torch.Tensor: The output tensor.
+        """
         x = x + self.mhsa(self.ln1(x))
         x = x + self.ffn(self.ln2(x))
         return x

@@ -19,6 +19,14 @@ inference_app = typer.Typer()
 
 
 def decode_tokenizer_config(dct: dict) -> dict:
+    """Decodes the tokenizer configuration from a dictionary.
+
+    Args:
+        dct (dict): The dictionary to decode.
+
+    Returns:
+        dict: The decoded dictionary.
+    """
     if "itos" and "stoi" in dct:
         dct["itos"] = {int(k): v for k, v in dct["itos"].items()}
         dct["stoi"] = {k: int(v) for k, v in dct["stoi"].items()}
@@ -27,6 +35,15 @@ def decode_tokenizer_config(dct: dict) -> dict:
 
 
 def load_model_tokenizer() -> tuple[GPTModel, Tokenizer]:
+    """Loads the model and tokenizer from the models folder.
+
+    Raises:
+        FileNotFoundError: If the models folder is not found.
+        FileNotFoundError: If no models are found.
+
+    Returns:
+        tuple[GPTModel, Tokenizer]: The loaded model and tokenizer.
+    """
     models_folder = Path(config.MODELS_FOLDER)
 
     if not models_folder.exists():
@@ -77,6 +94,13 @@ def inference_cli(
         int, typer.Option("--gen-limit", "-l", help="The generation limit")
     ] = config.GEN_LIMIT,
 ) -> None:
+    """Runs the inference process.
+
+    Args:
+        temperature (Annotated[ float, typer.Option, optional): The temperature for generation. Defaults to config.TEMPERATURE.
+        top_k (Annotated[ int, typer.Option, optional): The top-k sampling value. Defaults to config.TOP_K.
+        gen_limit (Annotated[ int, typer.Option, optional): The generation limit. Defaults to config.GEN_LIMIT.
+    """
     if config.MAX_SAMPLES:
         print(f"Max samples: {config.MAX_SAMPLES}")
 

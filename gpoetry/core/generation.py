@@ -16,6 +16,17 @@ def generate(
     block_size: int,
     gen_limit: int = 1000,
 ) -> None:
+    """Generates text using the model.
+
+    Args:
+        model (GPTModel): The model to use for generation.
+        tokenizer (Tokenizer): The tokenizer to use for encoding and decoding.
+        temperature (float): The temperature for sampling.
+        top_k (int): The top-k sampling value.
+        device (str): The device to use for generation.
+        block_size (int): The block size for the model.
+        gen_limit (int, optional): The generation limit. Defaults to 1000.
+    """
     # Load the model
     model.eval()
 

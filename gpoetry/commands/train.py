@@ -22,6 +22,12 @@ train_app = typer.Typer()
 
 
 def save_model(model: GPTModel, tokenizer_config: TokenizerConfig) -> None:
+    """Saves the model and tokenizer configuration.
+
+    Args:
+        model (GPTModel): The model to save.
+        tokenizer_config (TokenizerConfig): The tokenizer configuration to save.
+    """
     model_name = f"gpoetry_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     model_dir = Path(config.MODELS_FOLDER) / model_name
 
@@ -59,6 +65,16 @@ def train_cli(
         float, typer.Option("--train-size", "-s", help="The training size")
     ] = config.TRAIN_SIZE,
 ) -> None:
+    """Trains the model.
+
+    Args:
+        tokenization (Annotated[TokenizerType, typer.Option]): The tokenizer type.
+        max_samples (Annotated[int | None, typer.Option, optional): The maximum number of samples from the dataset. Defaults to config.MAX_SAMPLES.
+        batch_size (Annotated[int, typer.Option, optional): The training batch size. Defaults to config.BATCH_SIZE.
+        epochs (Annotated[int, typer.Option, optional): The number of epochs. Defaults to config.EPOCHS.
+        lr (Annotated[float, typer.Option, optional): The learning rate. Defaults to config.LR.
+        train_size (Annotated[float, typer.Option, optional): The training size. Defaults to config.TRAIN_SIZE.
+    """
     print(f"Device: {config.DEVICE}")
 
     match tokenization:
