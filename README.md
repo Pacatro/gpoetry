@@ -101,3 +101,6 @@ GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, i
 
 This project uses the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace.
 
+## Author
+
+Created by [**Paco Algar Muñoz**](https://github.com/Pacatro).
