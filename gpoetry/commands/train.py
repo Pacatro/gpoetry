@@ -1,6 +1,8 @@
 import typer
 from typing import Annotated
 
+from gpoetry.core.generation import generate
+
 from ..core import config
 from ..core.data import SpanishPoetryDataset, load_from_hf
 from ..core.model import GPTConfig, GPTModel
@@ -93,14 +95,26 @@ def train_cli(
     print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
     print("Training model...")
-    train(
-        model,
-        ds,
-        train_size=train_size,
-        epochs=epochs,
-        batch_size=batch_size,
-        lr=lr,
-        device=config.DEVICE,
-    )
+
+    try:
+        train(
+            model,
+            ds,
+            train_size=train_size,
+            epochs=epochs,
+            batch_size=batch_size,
+            lr=lr,
+            device=config.DEVICE,
+        )
+    except KeyboardInterrupt:
+        generate(
+            model=model,
+            tokenizer=tokenizer,
+            device=config.DEVICE,
+            temperature=config.TEMPERATURE,
+            top_k=config.TOP_K,
+            gen_limit=config.GEN_LIMIT,
+            block_size=config.BLOCK_SIZE,
+        )
 
     save_model(model, tokenizer)
