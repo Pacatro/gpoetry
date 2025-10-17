@@ -75,6 +75,8 @@ def load_model() -> tuple[GPTModel, Tokenizer]:
 
     model_dir = max(models_dirs)
 
+    print(f"Loading model from {model_dir}")
+
     model_path = model_dir / f"{model_dir.name}.safetensors"
     config_path = model_dir / "config.json"
     tokenizer_config_path = model_dir / "tokenizer.json"

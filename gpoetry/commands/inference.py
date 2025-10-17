@@ -27,9 +27,6 @@ def inference_cli(
         top_k (Annotated[ int, typer.Option, optional): The top-k sampling value. Defaults to config.TOP_K.
         gen_limit (Annotated[ int, typer.Option, optional): The generation limit. Defaults to config.GEN_LIMIT.
     """
-    if config.MAX_SAMPLES:
-        print(f"Max samples: {config.MAX_SAMPLES}")
-
     model, tokenizer = load_model()
 
     generate(
