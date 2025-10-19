@@ -2,12 +2,12 @@
 
 A tiny GPT model to generate Spanish poetry, built from scratch.
 
+> [!NOTE]
+> This project only focuses in the pre-training process, which means that you won't get a production-ready model, instead of that, you will get a base model that you can fine-tune on your own dataset.
+
 ## Getting Started
 
-> [!NOTE]
-> To run this project, you need to have the [`uv`](https://docs.astral.sh/uv/) package manager installed.
-
-Follow these steps to run the project:
+You can use [`uv`](https://docs.astral.sh/uv/) to install all the dependencies and create a virtual environment.
 
 1. **Clone the repository**
 
@@ -88,7 +88,7 @@ uv run gpoetry inference --temperature 0.8
 
 ## Model Architecture
 
-GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, implemented in `gpoetry/core/model.py`. It consists of:
+GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, implemented in [`gpoetry/core/model.py`](./gpoetry/core/model.py). It consists of:
 
 - **Token and Positional Embeddings**: To represent the input tokens and their positions in the sequence.
 - **Transformer Blocks**: A stack of `NUM_LAYERS` blocks. Each block contains:
@@ -99,7 +99,11 @@ GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, i
 
 ## Dataset
 
-This project uses the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace.
+This project uses the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace. Which contains +5k spanish poems form different authors.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
 
