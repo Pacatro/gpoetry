@@ -117,6 +117,7 @@ class Head(nn.Module):
         # sa = V * softmax((K^T * Q) / sqrt(D))
         wei = (q @ k.mT) * (d**-0.5)
 
+        assert not isinstance(self.tril, nn.Module)
         wei = wei.masked_fill(self.tril[:t, :t] == 0, float("-inf"))
 
         out = F.softmax(wei, dim=-1) @ v
@@ -168,7 +169,7 @@ class MLP(nn.Module):
     allowing the model to learn complex feature representations.
 
     The network architecture is:
-        Linear(emb_dim → 4*emb_dim) → GELU → Linear(4*emb_dim → emb_dim) → Dropout
+        Linear(emb_dim -> 4*emb_dim) -> GELU -> Linear(4*emb_dim -> emb_dim) -> Dropout
 
     Attributes:
         mlp: Sequential module containing the linear layers, activation, and dropout.
@@ -198,7 +199,7 @@ class Transformer(nn.Module):
         4. Position-wise feed-forward network (MLP) for non-linear transformation.
 
     The block follows the structure:
-        x → LayerNorm → Self-Attention → Residual → LayerNorm → MLP → Residual
+        x -> LayerNorm -> Self-Attention -> Residual -> LayerNorm -> MLP -> Residual
 
     Attributes:
         mhsa: Multi-head self-attention module.
