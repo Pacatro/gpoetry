@@ -3,7 +3,7 @@
 A tiny GPT model to generate Spanish poetry, built from scratch.
 
 > [!NOTE]
-> This project only focuses in the pre-training process, which means that you won't get a production-ready model, instead of that, you will get a base model that you can fine-tune on your own dataset.
+> This project only focuses in the pre-training process, which means that you won't get a production-ready model. Instead of that, you will get a base model that you can use for your own post-training process.
 
 ## Getting Started
 
@@ -100,6 +100,12 @@ GPoeTry uses a standard GPT (Generative Pre-trained Transformer) architecture, i
 ## Dataset
 
 This project uses the [`andreamorgar/spanish_poetry`](https://huggingface.co/datasets/andreamorgar/spanish_poetry) dataset from HuggingFace. Which contains +5k spanish poems form different authors.
+
+## References
+
+- [Understanding Deep Learning](https://udlbook.github.io/udlbook/)
+- [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+- [Construyamos-GPT](https://gabriels-organization-67.gitbook.io/construyamos-gpt/)
 
 ## License
 
