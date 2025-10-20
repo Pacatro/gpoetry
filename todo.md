@@ -5,6 +5,7 @@ List of things to do in the future.
 ## Dataset
 
 - [x] Test spanish poems datasets (<https://huggingface.co/datasets/andreamorgar/spanish_poetry>)
+- [ ] Save dataset to disk if -s flag is active
 
 ## Tokenization
 
@@ -28,3 +29,7 @@ List of things to do in the future.
 ## Inference
 
 - [x] Test model inference
+
+## Deploy
+
+- [ ] Create Docker container
