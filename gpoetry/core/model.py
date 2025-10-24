@@ -36,7 +36,7 @@ class GPTModel(nn.Module):
 
     def __init__(self, config: GPTConfig):
         super().__init__()
-        self.config = config
+        self.config: GPTConfig = config
 
         self.token_emb = nn.Embedding(config.vocab_size, config.emb_dim)
         self.pos_emb = nn.Embedding(config.block_size, config.emb_dim)
