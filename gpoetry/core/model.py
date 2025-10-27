@@ -139,15 +139,10 @@ class MHSelfAttention(nn.Module):
         dropout: Dropout layer for regularization.
     """
 
-    def __init__(
-        self,
-        emb_dim: int,
-        num_heads: int,
-        head_size: int,
-        block_size: int,
-        p: float = 0.2,
-    ):
+    def __init__(self, emb_dim: int, num_heads: int, block_size: int, p: float = 0.2):
         super().__init__()
+
+        head_size = emb_dim // num_heads
 
         self.heads = nn.ModuleList(
             [Head(emb_dim, head_size, block_size, p) for _ in range(num_heads)]
@@ -208,18 +203,10 @@ class Transformer(nn.Module):
         ln2: Layer normalization before MLP.
     """
 
-    def __init__(
-        self,
-        emb_dim: int,
-        num_heads: int,
-        block_size: int,
-        p: float = 0.2,
-    ):
+    def __init__(self, emb_dim: int, num_heads: int, block_size: int, p: float = 0.2):
         super().__init__()
 
-        head_size = emb_dim // num_heads
-
-        self.mhsa = MHSelfAttention(emb_dim, num_heads, head_size, block_size, p=p)
+        self.mhsa = MHSelfAttention(emb_dim, num_heads, block_size, p=p)
         self.ln1 = nn.LayerNorm(emb_dim)
         self.ffn = MLP(emb_dim, p=p)
         self.ln2 = nn.LayerNorm(emb_dim)
