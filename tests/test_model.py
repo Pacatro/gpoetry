@@ -51,9 +51,7 @@ class TestMHSelfAttention:
     @pytest.fixture
     def mhsa(self):
         """Create a MHSelfAttention instance for testing."""
-        return MHSelfAttention(
-            emb_dim=64, num_heads=4, head_size=16, block_size=128, p=0.1
-        )
+        return MHSelfAttention(emb_dim=64, num_heads=4, block_size=128, p=0.1)
 
     def test_initialization(self, mhsa):
         """Test that MHSelfAttention initializes correctly."""
