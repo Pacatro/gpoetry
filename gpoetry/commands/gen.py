@@ -5,11 +5,16 @@ from ..core import config
 from ..core.generation import generate
 from ..core.model_io import load_model
 
-inference_app = typer.Typer()
+gen_app = typer.Typer()
 
 
-@inference_app.command(name="inference", help="Run the inference")
-def inference_cli(
+@gen_app.command(
+    name="gen", help="Generate a new poem using the most recent trained model."
+)
+def gen_cli(
+    init_text: Annotated[
+        str, typer.Option("--init-text", "-i", help="The initial text")
+    ] = config.INIT_TOKEN,
     temperature: Annotated[
         float, typer.Option("--temperature", "-t", help="The temperature")
     ] = config.TEMPERATURE,
@@ -20,9 +25,10 @@ def inference_cli(
         int, typer.Option("--gen-limit", "-l", help="The generation limit")
     ] = config.GEN_LIMIT,
 ) -> None:
-    """Runs the inference process.
+    """Generate a new poem using the most recent trained model.
 
     Args:
+        init_text (Annotated[ str, typer.Option, optional): The initial text. Defaults to config.INIT_TOKEN.
         temperature (Annotated[ float, typer.Option, optional): The temperature for generation. Defaults to config.TEMPERATURE.
         top_k (Annotated[ int, typer.Option, optional): The top-k sampling value. Defaults to config.TOP_K.
         gen_limit (Annotated[ int, typer.Option, optional): The generation limit. Defaults to config.GEN_LIMIT.
@@ -31,6 +37,7 @@ def inference_cli(
 
     generate(
         model=model,
+        init_text=init_text,
         tokenizer=tokenizer,
         top_k=top_k,
         temperature=temperature,

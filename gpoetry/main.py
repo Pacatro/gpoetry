@@ -2,7 +2,7 @@ import typer
 from pathlib import Path
 
 from .core import config
-from .commands.inference import inference_app
+from .commands.gen import gen_app
 from .commands.train import train_app
 
 
@@ -12,7 +12,7 @@ app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]},
 )
 
-app.add_typer(inference_app)
+app.add_typer(gen_app)
 app.add_typer(train_app)
 
 

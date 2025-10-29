@@ -38,7 +38,7 @@ You can use [`uv`](https://docs.astral.sh/uv/) to install all the dependencies a
 
 ## Usage
 
-The application is structured as a CLI with two main commands: `train` and `inference`.
+The application is structured as a CLI with two main commands: `train` and `gen`.
 
 ### Training the model
 
@@ -66,16 +66,17 @@ uv run gpoetry train --tokenization word
 
 ### Generating poetry
 
-To generate poetry with a trained model, use the `inference` command. This command will load the latest model from the `models` directory and generate text.
+To generate poetry with a trained model, use the `gen` command. This command will load the latest model from the `models` directory and generate text.
 
 ```bash
-uv run gpoetry inference [OPTIONS]
+uv run gpoetry gen [OPTIONS]
 ```
 
 **Options:**
 
 | Option | Description | Default |
 | --- | --- | --- |
+| `-i`, `--init-text` | The initial text to use for generation. | `INIT_TOKEN`  |
 | `-t`, `--temperature` | Controls the randomness of the generated text. | `0.6`|
 | `-k`, `--top-k` | Samples from the top K most likely next tokens. | `50` |
 | `-l`, `--gen-limit` | The generation limit in tokens. | `1000` |
@@ -83,7 +84,7 @@ uv run gpoetry inference [OPTIONS]
 Example of generating text with a higher temperature:
 
 ```bash
-uv run gpoetry inference --temperature 0.8
+uv run gpoetry gen --temperature 0.8
 ```
 
 ## Model Architecture

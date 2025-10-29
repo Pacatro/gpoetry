@@ -9,6 +9,7 @@ from . import config
 
 def generate(
     model: nn.Module,
+    init_text: str,
     tokenizer: Tokenizer,
     temperature: float,
     top_k: int,
@@ -20,6 +21,7 @@ def generate(
 
     Args:
         model (GPTModel): The model to use for generation.
+        init_text (str): The initial text to use for generation.
         tokenizer (Tokenizer): The tokenizer to use for encoding and decoding.
         temperature (float): The temperature for sampling.
         top_k (int): The top-k sampling value.
@@ -31,7 +33,7 @@ def generate(
     model.eval()
 
     # We start with an initial context with only the first token
-    start_token = tokenizer.encode(config.INIT_TOKEN)[0]
+    start_token = tokenizer.encode(init_text)[0]
     context = torch.tensor([[start_token]], dtype=torch.long, device=device)
     initial_str = tokenizer.decode(context[0].tolist())
 
