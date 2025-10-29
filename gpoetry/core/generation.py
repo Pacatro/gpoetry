@@ -1,14 +1,14 @@
 import torch
+from torch import nn
 import torch.nn.functional as F
 import time
 
-from .model import GPTModel
 from .tokenization import Tokenizer
 from . import config
 
 
 def generate(
-    model: GPTModel,
+    model: nn.Module,
     tokenizer: Tokenizer,
     temperature: float,
     top_k: int,

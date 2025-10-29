@@ -1,8 +1,7 @@
 import typer
 from typing import Annotated
 
-from gpoetry.core.generation import generate
-
+from ..core.generation import generate
 from ..core import config
 from ..core.data import SpanishPoetryDataset, load_from_hf
 from ..core.model import GPTConfig, GPTModel
@@ -40,6 +39,9 @@ def train_cli(
     train_size: Annotated[
         float, typer.Option("--train-size", "-s", help="The training size")
     ] = config.TRAIN_SIZE,
+    verbose: Annotated[
+        bool, typer.Option("--verbose", "-v", help="Print verbose output")
+    ] = False,
 ) -> None:
     """Trains the model.
 
@@ -51,15 +53,12 @@ def train_cli(
         lr (Annotated[float, typer.Option, optional): The learning rate. Defaults to config.LR.
         train_size (Annotated[float, typer.Option, optional): The training size. Defaults to config.TRAIN_SIZE.
     """
-    print(f"Device: {config.DEVICE}")
 
     match tokenization:
         case TokenizerType.WORD:
             tokenizer = WordTokenizer()
         case TokenizerType.CHAR:
             tokenizer = CharTokenizer()
-
-    print(f"Tokenizer: {tokenization.value}")
 
     corpus = load_from_hf(
         config.DATASET_URL,
@@ -69,9 +68,6 @@ def train_cli(
         max_samples=max_samples,
     )
 
-    if max_samples:
-        print(f"Max samples: {max_samples}")
-
     tokenizer.fit(corpus)
 
     ds = SpanishPoetryDataset(
@@ -79,20 +75,26 @@ def train_cli(
     )
 
     gpt_config = GPTConfig(vocab_size=tokenizer.config.vocab_size)
-
-    print(f"Vocab size: {gpt_config.vocab_size}")
-    print(f"Heads: {gpt_config.num_heads}")
-    print(f"Layers: {gpt_config.num_layers}")
-    print(f"Block size: {gpt_config.block_size}")
-    print(f"Embbeding dim: {gpt_config.emb_dim}")
-    print(f"p: {gpt_config.p}")
-
     model = GPTModel(config=gpt_config).to(config.DEVICE)
 
     # Can't compile the model because my GPU is too old :'D
     # model.compile()
 
-    print("Model parameters:", sum(p.numel() for p in model.parameters()))
+    if verbose:
+        print(f"Device: {config.DEVICE}")
+
+        if max_samples:
+            print(f"Max samples: {max_samples}")
+
+        print(f"Vocab size: {gpt_config.vocab_size}")
+        print(f"Heads: {gpt_config.num_heads}")
+        print(f"Layers: {gpt_config.num_layers}")
+        print(f"Block size: {gpt_config.block_size}")
+        print(f"Embbeding dim: {gpt_config.emb_dim}")
+        print(f"p: {gpt_config.p}")
+        print(f"Tokenizer: {tokenization.value}")
+
+        print("Model parameters:", sum(p.numel() for p in model.parameters()))
 
     print("Training model...")
 

@@ -27,8 +27,7 @@ def train_step(
     model.train()
 
     train_loss = 0
-    for batch in train_dataloader:
-        x, y = batch
+    for x, y in train_dataloader:
         x, y = x.to(device), y.to(device)
 
         logits = model(x)
@@ -71,8 +70,7 @@ def val_step(
     val_loss = 0
 
     with torch.inference_mode():
-        for batch in val_dataloader:
-            x, y = batch
+        for x, y in val_dataloader:
             x, y = x.to(device), y.to(device)
             logits = model(x)
 

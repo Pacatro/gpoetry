@@ -117,7 +117,7 @@ class Head(nn.Module):
         # sa = V * softmax((K^T * Q) / sqrt(D))
         wei = (q @ k.mT) * (d**-0.5)
 
-        assert not isinstance(self.tril, nn.Module)
+        assert isinstance(self.tril, torch.Tensor)
         wei = wei.masked_fill(self.tril[:t, :t] == 0, float("-inf"))
 
         out = F.softmax(wei, dim=-1) @ v
