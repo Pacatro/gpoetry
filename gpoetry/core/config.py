@@ -11,6 +11,7 @@ MAX_SAMPLES: int | None = 500
 TOKENIZER_TYPE: TokenizerType = TokenizerType.CHAR
 INIT_TOKEN: str = "<|start|>"
 END_TOKEN: str = "<|end|>"
+DATA_DIR: str = "data"
 
 # Model config
 NUM_HEADS: int = 4

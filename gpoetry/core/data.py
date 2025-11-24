@@ -1,7 +1,11 @@
-from datasets import load_dataset, Dataset as HFDataset
-from torch.utils.data import Dataset as TorchDataset
-import torch
+from pathlib import Path
 
+import torch
+from datasets import Dataset as HFDataset
+from datasets import load_dataset
+from torch.utils.data import Dataset as TorchDataset
+
+from . import config
 from .tokenization import Tokenizer
 
 
@@ -20,11 +24,6 @@ class SpanishPoetryDataset(TorchDataset):
         self.block_size = block_size
 
     def __len__(self):
-        """Returns the length of the dataset.
-
-        Returns:
-            int: The length of the dataset.
-        """
         return len(self.tokens) - self.block_size
 
     def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
@@ -64,16 +63,30 @@ def load_from_hf(
     Returns:
         str: The loaded corpus as a single string.
     """
+    data_path = Path(config.DATA_DIR)
+    corpus_path = data_path / "corpus.txt"
+
+    if corpus_path.exists():
+        print("Loading corpus from disk...")
+        return corpus_path.read_text(encoding="utf-8")
+
     ds = load_dataset(url, split="train")
     assert isinstance(ds, HFDataset)
 
-    if max_samples and max_samples > 0:
+    if max_samples is not None and max_samples > 0:
         ds = ds.select(range(max_samples))
 
-    texts = [
+    parts = [
         f"{init_token}\n{text.strip()}\n{end_token}\n\n"
         for text in ds[column_name]
-        if text
+        if text is not None
     ]
 
-    return "".join(texts)
+    corpus = "".join(parts)
+
+    data_path.mkdir(parents=True, exist_ok=True)
+
+    with open(corpus_path, "w") as f:
+        f.writelines(corpus)
+
+    return corpus
