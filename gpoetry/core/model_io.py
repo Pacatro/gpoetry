@@ -8,9 +8,7 @@ from .model import GPTModel, GPTConfig
 from .tokenization import (
     TokenizerConfig,
     Tokenizer,
-    TokenizerType,
-    WordTokenizer,
-    CharTokenizer,
+    get_tokenizer,
 )
 from . import config
 
@@ -94,10 +92,6 @@ def load_model() -> tuple[GPTModel, Tokenizer]:
 
     tokenizer_config = TokenizerConfig(**tokenizer_config_data)
 
-    match tokenizer_config.tk_type:
-        case TokenizerType.WORD.value:
-            tokenizer = WordTokenizer(tokenizer_config)
-        case TokenizerType.CHAR.value:
-            tokenizer = CharTokenizer(tokenizer_config)
+    tokenizer = get_tokenizer(tokenizer_config)
 
     return model, tokenizer

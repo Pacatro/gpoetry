@@ -5,7 +5,21 @@ from gpoetry.core.tokenization import (
     TokenizerType,
     WordTokenizer,
     CharTokenizer,
+    get_tokenizer,
 )
+
+
+def test_get_tokenizer():
+    char_config = TokenizerConfig(tk_type="char")
+    word_config = TokenizerConfig(tk_type="word")
+
+    assert isinstance(get_tokenizer(char_config), CharTokenizer)
+    assert isinstance(get_tokenizer(word_config), WordTokenizer)
+
+
+def test_get_tokenizer_with_invalid_type():
+    with pytest.raises(ValueError, match="'foo' is not a valid TokenizerType"):
+        get_tokenizer(TokenizerConfig(tk_type="foo"))
 
 
 class TestTokenizerConfig:

@@ -5,11 +5,7 @@ from ..core.generation import generate
 from ..core import config
 from ..core.data import SpanishPoetryDataset, load_from_hf
 from ..core.model import GPTConfig, GPTModel
-from ..core.tokenization import (
-    CharTokenizer,
-    TokenizerType,
-    WordTokenizer,
-)
+from ..core.tokenization import TokenizerConfig, TokenizerType, get_tokenizer
 from ..core.training import train
 from ..core.model_io import save_model
 
@@ -54,11 +50,7 @@ def train_cli(
         train_size (Annotated[float, typer.Option, optional): The training size. Defaults to config.TRAIN_SIZE.
     """
 
-    match tokenization:
-        case TokenizerType.WORD:
-            tokenizer = WordTokenizer()
-        case TokenizerType.CHAR:
-            tokenizer = CharTokenizer()
+    tokenizer = get_tokenizer(TokenizerConfig(tk_type=tokenization.value))
 
     corpus = load_from_hf(
         config.DATASET_URL,
@@ -111,6 +103,7 @@ def train_cli(
     except KeyboardInterrupt:
         generate(
             model=model,
+            init_text=config.INIT_TOKEN,
             tokenizer=tokenizer,
             device=config.DEVICE,
             temperature=config.TEMPERATURE,

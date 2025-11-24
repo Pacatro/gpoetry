@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from enum import Enum
 from dataclasses import dataclass, field
+from typing import Callable
 
 
 class TokenizerType(Enum):
@@ -182,3 +183,24 @@ class CharTokenizer(Tokenizer):
             str: The detokenized string.
         """
         return "".join(tokens)
+
+
+type TokenizerConstructor = Callable[[TokenizerConfig], Tokenizer]
+
+tokenizers: dict[TokenizerType, TokenizerConstructor] = {
+    TokenizerType.WORD: WordTokenizer,
+    TokenizerType.CHAR: CharTokenizer,
+}
+
+
+def get_tokenizer(config: TokenizerConfig) -> Tokenizer:
+    """Gets a tokenizer by type.
+
+    Args:
+        tk_type (str): The type of tokenizer.
+
+    Returns:
+        Tokenizer: The tokenizer.
+
+    """
+    return tokenizers[TokenizerType(config.tk_type)](config)
