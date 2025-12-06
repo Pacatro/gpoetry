@@ -1,13 +1,14 @@
-import typer
 from typing import Annotated
 
-from ..core.generation import generate
+import typer
+
 from ..core import config
 from ..core.data import SpanishPoetryDataset, load_from_hf
+from ..core.generation import generate
 from ..core.model import GPTConfig, GPTModel
+from ..core.model_io import save_model
 from ..core.tokenization import TokenizerConfig, TokenizerType, get_tokenizer
 from ..core.training import train
-from ..core.model_io import save_model
 
 train_app = typer.Typer()
 

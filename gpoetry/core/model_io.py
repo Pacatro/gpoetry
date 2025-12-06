@@ -1,16 +1,17 @@
 import json
-from pathlib import Path
 from dataclasses import asdict
 from datetime import datetime
-from safetensors.torch import save_file, load_file
+from pathlib import Path
 
-from .model import GPTModel, GPTConfig
+from safetensors.torch import load_file, save_file
+
+from . import config
+from .model import GPTConfig, GPTModel
 from .tokenization import (
-    TokenizerConfig,
     Tokenizer,
+    TokenizerConfig,
     get_tokenizer,
 )
-from . import config
 
 
 def save_model(model: GPTModel, tokenizer: Tokenizer) -> None:

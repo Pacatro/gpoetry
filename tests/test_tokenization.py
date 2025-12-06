@@ -1,10 +1,10 @@
 import pytest
 
 from gpoetry.core.tokenization import (
+    CharTokenizer,
     TokenizerConfig,
     TokenizerType,
     WordTokenizer,
-    CharTokenizer,
     get_tokenizer,
 )
 

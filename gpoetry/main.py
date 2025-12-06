@@ -1,10 +1,10 @@
-import typer
 from pathlib import Path
 
-from .core import config
+import typer
+
 from .commands.gen import gen_app
 from .commands.train import train_app
-
+from .core import config
 
 app = typer.Typer(
     rich_markup_mode=None,

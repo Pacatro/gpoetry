@@ -1,10 +1,11 @@
-import torch
-from torch import nn
-import torch.nn.functional as F
 import time
 
-from .tokenization import Tokenizer
+import torch
+import torch.nn.functional as F
+from torch import nn
+
 from . import config
+from .tokenization import Tokenizer
 
 
 def generate(

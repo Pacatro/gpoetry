@@ -5,10 +5,10 @@ from torch import nn
 from gpoetry.core.model import (
     MLP,
     GPTConfig,
+    GPTModel,
     Head,
     MHSelfAttention,
     Transformer,
-    GPTModel,
 )
 
 

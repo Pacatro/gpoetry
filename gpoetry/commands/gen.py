@@ -1,5 +1,6 @@
-import typer
 from typing import Annotated
+
+import typer
 
 from ..core import config
 from ..core.generation import generate
