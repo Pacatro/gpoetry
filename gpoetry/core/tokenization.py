@@ -83,10 +83,9 @@ class Tokenizer(ABC):
             all_tokens.update(tokens)
         else:
             for text in texts:
-                if not text:
-                    continue
-                tokens = self._tokenize(text)
-                all_tokens.update(tokens)
+                if text:
+                    tokens = self._tokenize(text)
+                    all_tokens.update(tokens)
 
         self.config.vocab = sorted(all_tokens)
         self.config.vocab_size = len(self.config.vocab)
